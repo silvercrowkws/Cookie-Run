@@ -48,6 +48,11 @@ public class Player : MonoBehaviour
     /// </summary>
     bool doublejumpAble = true;
 
+    /// <summary>
+    /// 현재 슬라이딩이 가능한지 확인하는 bool 변수
+    /// </summary>
+    bool slidingAble = true;
+
     public float jumpPower = 10.0f;
 
     private void Awake()
@@ -65,12 +70,14 @@ public class Player : MonoBehaviour
     {
         inputActions.Enable();
         inputActions.Move.Jump.performed += Jump;
-        inputActions.Move.Sliding.performed += Sliding;
+        inputActions.Move.Sliding.started += StartSliding;      // 슬라이딩을 눌렀을 때 시작
+        inputActions.Move.Sliding.canceled += CancelSliding;    // 슬라이딩을 땠을 때 끝
     }
 
     private void OnDisable()
     {
-        inputActions.Move.Sliding.performed -= Sliding;
+        inputActions.Move.Sliding.canceled -= CancelSliding;    // 슬라이딩을 땠을 때 끝
+        inputActions.Move.Sliding.started -= StartSliding;
         inputActions.Move.Jump.performed -= Jump;
         inputActions.Disable();
     }
@@ -108,14 +115,34 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 키보드용 슬라이딩 함수(컨트롤과 연결)
+    /// 키보드용 슬라이딩 시작 함수(컨트롤과 연결)
     /// </summary>
     /// <param name="context"></param>
-    private void Sliding(InputAction.CallbackContext context)
+    private void StartSliding(InputAction.CallbackContext context)
     {
-        animator.SetBool("Run", false);
-        animator.SetBool("Booster", false);
-        animator.SetBool("Sliding", true);
+        if (slidingAble)
+        {
+            onGetBool();        //슬라이딩 전에 무슨 상태였는지 기록
+
+            Debug.Log("슬라이딩 시작");
+            animator.SetBool("Run", false);
+            animator.SetBool("Booster", false);
+            animator.SetBool("Sliding", true);
+        }
+    }
+
+    /// <summary>
+    /// 키보드용 슬라이딩 종료 함수(컨트롤과 연결)
+    /// </summary>
+    /// <param name="context"></param>
+    private void CancelSliding(InputAction.CallbackContext context)
+    {
+        // 공중에서 이 함수가 호출되어도 상관은 없음
+        Debug.Log("슬라이딩 끝");
+
+        animator.SetBool("Sliding", false);
+        animator.SetBool("Run", isRun);                 // 바닥에서 떨어지기 전에 Run 상태였으면 Run 활성화
+        animator.SetBool("Booster", isBooster);         // 바닥에서 떨어지기 전에 Booster 상태였으면 Booster 활성화
     }
 
     /*private void OnTriggerEnter2D(Collider2D collision)
@@ -133,8 +160,11 @@ public class Player : MonoBehaviour
         {
             Debug.Log("땅과 충돌");
 
-            animator.SetBool("Run", isRun);                 // 바닥에서 떨어지기 전에 Run 상태였으면 Run 활성화
-            animator.SetBool("Booster", isBooster);         // 바닥에서 떨어지기 전에 Booster 상태였으면 Booster 활성화
+            if (!animator.GetBool("Sliding"))                   // 슬라이딩 상태가 아니면
+            {
+                animator.SetBool("Run", isRun);                 // 바닥에서 떨어지기 전에 Run 상태였으면 Run 활성화
+                animator.SetBool("Booster", isBooster);         // 바닥에서 떨어지기 전에 Booster 상태였으면 Booster 활성화
+            }
 
             StartCoroutine(JumpDelayCoroutine());
         }
@@ -158,8 +188,12 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             Debug.Log("땅에서 떨어짐");
-            isRun = animator.GetBool("Run");               // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
-            isBooster = animator.GetBool("Booster");       // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
+            //isRun = animator.GetBool("Run");              // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
+            //isBooster = animator.GetBool("Booster");      // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
+
+            onGetBool();
+
+            slidingAble = false;                            // 바닥에서 떨어졌을 때는 슬라이딩 안되게
 
             // 점프 중에 바닥에 닿기 전까지는 꺼짐
             animator.SetBool("Run", false);
@@ -176,5 +210,18 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         jumpAble = true;
         doublejumpAble = true;
+        slidingAble = true;
+    }
+
+    /// <summary>
+    /// 이전에 무슨 상태였는지 기록용 함수
+    /// </summary>
+    private void onGetBool()
+    {
+        isRun = animator.GetBool("Run");               // 바닥에서 떨어지기 전에 무슨 상태였는지 확인        
+        isBooster = animator.GetBool("Booster");       // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
+
+        Debug.Log($"isRun = {isRun}");
+        Debug.Log($"isBooster = {isBooster}");
     }
 }
