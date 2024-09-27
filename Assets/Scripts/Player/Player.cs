@@ -56,7 +56,6 @@ public class Player : MonoBehaviour
     public float jumpPower = 7.5f;
     public float doublejumpPower = 5.0f;
 
-
     Vector2 jumpOffset = new Vector2(0, -0.55f);
     Vector2 defaultOffset = new Vector2(0, -0.65f);
     Vector2 slidingOffset = new Vector2(0, -0.952394f);
