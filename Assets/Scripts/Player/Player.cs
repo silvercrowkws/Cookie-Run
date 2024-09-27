@@ -53,7 +53,8 @@ public class Player : MonoBehaviour
     /// </summary>
     bool slidingAble = false;
 
-    public float jumpPower = 10.0f;
+    public float jumpPower = 5.0f;
+    public float doublejumpPower = 2.5f;
 
     Vector2 jumpOffset = new Vector2(0, -0.55f);
     Vector2 defaultOffset = new Vector2(0, -0.65f);
@@ -124,7 +125,7 @@ public class Player : MonoBehaviour
 
             doublejumpAble = false;     // 더블 점프 후에는 다시 불가능
             animator.SetTrigger("DoubleJump");
-            rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+            rigid.AddForce(Vector2.up * doublejumpPower, ForceMode2D.Impulse);
 
             colFix();
         }
