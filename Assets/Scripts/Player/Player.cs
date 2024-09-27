@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 콜라이더
     /// </summary>
-    Collider2D col;
+    BoxCollider2D col;
 
     /// <summary>
     /// 바닥에서 떨어지기 전에 Run 상태였는지 확인하는 bool 변수
@@ -46,21 +46,28 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 현재 더블 점프가 가능한지 확인하는 bool 변수
     /// </summary>
-    bool doublejumpAble = true;
+    bool doublejumpAble = false;
 
     /// <summary>
     /// 현재 슬라이딩이 가능한지 확인하는 bool 변수
     /// </summary>
-    bool slidingAble = true;
+    bool slidingAble = false;
 
     public float jumpPower = 10.0f;
+
+    Vector2 jumpOffset = new Vector2(0, -0.55f);
+    Vector2 defaultOffset = new Vector2(0, -0.65f);
+    Vector2 slidingOffset = new Vector2(0, -0.952394f);
+
+    Vector2 slidingSize = new Vector2(1, 0.6952119f);
+    Vector2 defaultSize = new Vector2(1, 1.3f);
 
     private void Awake()
     {
         inputActions = new PlayerInputActions();
 
         rigid = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
+        col = GetComponent<BoxCollider2D>();
 
         animator = GetComponent<Animator>();
         animator.SetBool("Run", true);      // 초기 세팅은 Run true 상태
@@ -87,6 +94,48 @@ public class Player : MonoBehaviour
         
     }
 
+    private void Update()
+    {
+        // 현재 애니메이션이 Jump이면 콜라이더 Offset 수정
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+        {
+            col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
+            col.size = defaultSize;             // 크기 디폴트
+        }
+        /*// 현재 애니메이션이 Sliding이면 콜라이더 크기 수정
+        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Sliding"))
+        {
+            col.offset = slidingOffset;
+            col.size = slidingSize;
+        }*/
+        else
+        {
+            col.offset = defaultOffset;        // 점프 이외의 상황에는 콜라이더 Offset 원래대로
+            col.size = defaultSize;             // 크기 디폴트
+        }
+    }
+
+    /*private void FixedUpdate()
+    {
+        // 현재 애니메이션이 Jump이면 콜라이더 Offset 수정
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+        {
+            col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
+            col.size = defaultSize;             // 크기 디폴트
+        }
+        // 현재 애니메이션이 Sliding이면 콜라이더 크기 수정
+        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Sliding"))
+        {
+            col.offset = slidingOffset;
+            col.size = slidingSize;
+        }
+        else
+        {
+            col.offset = defaultOffset;        // 점프 이외의 상황에는 콜라이더 Offset 원래대로
+            col.size = defaultSize;             // 크기 디폴트
+        }
+    }*/
+
     /// <summary>
     /// 키보드용 점프 함수(스페이스바와 연결)
     /// </summary>
@@ -99,18 +148,27 @@ public class Player : MonoBehaviour
         if (jumpAble)
         {
             Debug.Log("점프");
-            jumpAble = false;
+
+            jumpAble = false;           // 점프 이후에는 점프가 불가능하게 설정
             animator.SetTrigger("Jump");
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+
+            colFix();
+
+            // doublejumpAble을 여기서 바로 true로 하지 말고, 일정 시간 후 활성화
+            StartCoroutine(EnableDoubleJumpCoroutine());
         }
 
         // 현재 애니메이터 상태가 Jump 애니메이션인지 확인
         if (doublejumpAble && animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
         {
             Debug.Log("더블 점프");
-            doublejumpAble = false;
+
+            doublejumpAble = false;     // 더블 점프 후에는 다시 불가능
             animator.SetTrigger("DoubleJump");
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+
+            colFix();
         }
     }
 
@@ -125,9 +183,12 @@ public class Player : MonoBehaviour
             onGetBool();        //슬라이딩 전에 무슨 상태였는지 기록
 
             Debug.Log("슬라이딩 시작");
+
             animator.SetBool("Run", false);
             animator.SetBool("Booster", false);
             animator.SetBool("Sliding", true);
+
+            colFix();
         }
     }
 
@@ -143,6 +204,8 @@ public class Player : MonoBehaviour
         animator.SetBool("Sliding", false);
         animator.SetBool("Run", isRun);                 // 바닥에서 떨어지기 전에 Run 상태였으면 Run 활성화
         animator.SetBool("Booster", isBooster);         // 바닥에서 떨어지기 전에 Booster 상태였으면 Booster 활성화
+
+        colFix();
     }
 
     /*private void OnTriggerEnter2D(Collider2D collision)
@@ -154,11 +217,38 @@ public class Player : MonoBehaviour
         }
     }*/
 
+    /// <summary>
+    /// 충돌 중일 때
+    /// </summary>
+    /// <param name="collision"></param>
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            //Debug.Log("땅과 충돌 중");
+
+            // 현재 재생중인 애니메이션이 Run 또는 Booster이면
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Run") || animator.GetCurrentAnimatorStateInfo(0).IsName("Booster"))
+            {
+                if (!jumpAble)      // 점프가 불가능 했을 경우에만 코루틴 실행
+                {
+                    StartCoroutine(JumpDelayCoroutine());
+                    // 코루틴 실행 후에는 jumpAble = true
+                }
+            }
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             Debug.Log("땅과 충돌");
+
+            // 착지 시 모든 점프 관련 상태 초기화
+            jumpAble = true;         // 점프 가능하게 설정
+            slidingAble = true;      // 슬라이딩 가능하게 설정
+            doublejumpAble = false;  // 더블 점프 불가하게 설정 (착지 후 다시 초기화 필요)
 
             if (!animator.GetBool("Sliding"))                   // 슬라이딩 상태가 아니면
             {
@@ -166,7 +256,11 @@ public class Player : MonoBehaviour
                 animator.SetBool("Booster", isBooster);         // 바닥에서 떨어지기 전에 Booster 상태였으면 Booster 활성화
             }
 
-            StartCoroutine(JumpDelayCoroutine());
+            //StartCoroutine(JumpDelayCoroutine());
+
+            // 애니메이션 상태 초기화
+            animator.ResetTrigger("Jump");      // Jump 애니메이션 트리거를 초기화
+            animator.ResetTrigger("DoubleJump"); // DoubleJump 애니메이션 트리거를 초기화
         }
     }
 
@@ -195,6 +289,8 @@ public class Player : MonoBehaviour
 
             slidingAble = false;                            // 바닥에서 떨어졌을 때는 슬라이딩 안되게
 
+
+            // 슬라이딩 중 땅에서 떨어져서 런과 부스터가 안이어지는 버그 있음
             // 점프 중에 바닥에 닿기 전까지는 꺼짐
             animator.SetBool("Run", false);
             animator.SetBool("Booster", false);
@@ -208,9 +304,10 @@ public class Player : MonoBehaviour
     IEnumerator JumpDelayCoroutine()
     {
         yield return new WaitForSeconds(0.1f);
+        //yield return new WaitForEndOfFrame();
         jumpAble = true;
-        doublejumpAble = true;
-        slidingAble = true;
+        //slidingAble = true;
+        //doublejumpAble = true;
     }
 
     /// <summary>
@@ -223,5 +320,63 @@ public class Player : MonoBehaviour
 
         Debug.Log($"isRun = {isRun}");
         Debug.Log($"isBooster = {isBooster}");
+    }
+
+    // 점프 후 일정 시간 후에 더블 점프 가능하도록 조정
+    IEnumerator EnableDoubleJumpCoroutine()
+    {
+        yield return new WaitForSeconds(0.2f); // 조금의 딜레이 후에 더블 점프 가능하게 설정
+        doublejumpAble = true;
+    }
+
+    IEnumerator delayCoroutine()
+    {
+        yield return new WaitForSeconds(0.35f);
+    }
+
+    /// <summary>
+    /// 콜라이더의 오프셋과 사이즈를 변경하는 함수
+    /// </summary>
+    private void colFix()
+    {
+        /*// 현재 애니메이션이 Jump이면 콜라이더 Offset 수정
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+        {
+            col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
+            col.size = defaultSize;             // 크기 디폴트
+            Debug.Log("점프로 인한 크기 조절");
+        }
+        // 현재 애니메이션이 Sliding이면 콜라이더 크기 수정
+        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Sliding"))
+        {
+            col.offset = slidingOffset;
+            col.size = slidingSize;
+            Debug.Log("슬라이딩으로 인한 크기 조절");
+        }
+        else
+        {
+            col.offset = defaultOffset;         // 점프 이외의 상황에는 콜라이더 Offset 원래대로
+            col.size = defaultSize;             // 크기 디폴트
+            Debug.Log("점프이외 인한 크기 조절");
+        }*/
+
+        if (animator.GetBool("Jump"))
+        {
+            col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
+            col.size = defaultSize;             // 크기 디폴트
+            Debug.Log("점프로 인한 크기 조절");
+        }
+        else if (animator.GetBool("Sliding"))
+        {
+            col.offset = slidingOffset;
+            col.size = slidingSize;
+            Debug.Log("슬라이딩으로 인한 크기 조절");
+        }
+        else
+        {
+            col.offset = defaultOffset;         // 점프 이외의 상황에는 콜라이더 Offset 원래대로
+            col.size = defaultSize;             // 크기 디폴트
+            Debug.Log("점프이외 인한 크기 조절");
+        }
     }
 }

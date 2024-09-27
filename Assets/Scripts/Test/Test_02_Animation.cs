@@ -15,22 +15,12 @@ public class Test_02_Animation : TestBase
 
     protected override void OnTest1(InputAction.CallbackContext context)
     {
-        Debug.Log("1번 키 누름");
-        Debug.Log("런");
-
-        animator.SetBool("Booster", false);
-        animator.SetBool("Sliding", false);
-        animator.SetBool("Run", true);
+        Time.timeScale = 1.0f;
     }
 
     protected override void OnTest2(InputAction.CallbackContext context)
     {
-        Debug.Log("2번 키 누름");
-        Debug.Log("부스터");
-
-        animator.SetBool("Run", false);
-        animator.SetBool("Sliding", false);
-        animator.SetBool("Booster", true);
+        Time.timeScale = 0.1f;
     }
 
     protected override void OnTest3(InputAction.CallbackContext context)
