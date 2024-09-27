@@ -94,48 +94,6 @@ public class Player : MonoBehaviour
         
     }
 
-    private void Update()
-    {
-        // 현재 애니메이션이 Jump이면 콜라이더 Offset 수정
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
-        {
-            col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
-            col.size = defaultSize;             // 크기 디폴트
-        }
-        /*// 현재 애니메이션이 Sliding이면 콜라이더 크기 수정
-        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Sliding"))
-        {
-            col.offset = slidingOffset;
-            col.size = slidingSize;
-        }*/
-        else
-        {
-            col.offset = defaultOffset;        // 점프 이외의 상황에는 콜라이더 Offset 원래대로
-            col.size = defaultSize;             // 크기 디폴트
-        }
-    }
-
-    /*private void FixedUpdate()
-    {
-        // 현재 애니메이션이 Jump이면 콜라이더 Offset 수정
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
-        {
-            col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
-            col.size = defaultSize;             // 크기 디폴트
-        }
-        // 현재 애니메이션이 Sliding이면 콜라이더 크기 수정
-        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Sliding"))
-        {
-            col.offset = slidingOffset;
-            col.size = slidingSize;
-        }
-        else
-        {
-            col.offset = defaultOffset;        // 점프 이외의 상황에는 콜라이더 Offset 원래대로
-            col.size = defaultSize;             // 크기 디폴트
-        }
-    }*/
-
     /// <summary>
     /// 키보드용 점프 함수(스페이스바와 연결)
     /// </summary>
@@ -339,27 +297,6 @@ public class Player : MonoBehaviour
     /// </summary>
     private void colFix()
     {
-        /*// 현재 애니메이션이 Jump이면 콜라이더 Offset 수정
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
-        {
-            col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
-            col.size = defaultSize;             // 크기 디폴트
-            Debug.Log("점프로 인한 크기 조절");
-        }
-        // 현재 애니메이션이 Sliding이면 콜라이더 크기 수정
-        else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Sliding"))
-        {
-            col.offset = slidingOffset;
-            col.size = slidingSize;
-            Debug.Log("슬라이딩으로 인한 크기 조절");
-        }
-        else
-        {
-            col.offset = defaultOffset;         // 점프 이외의 상황에는 콜라이더 Offset 원래대로
-            col.size = defaultSize;             // 크기 디폴트
-            Debug.Log("점프이외 인한 크기 조절");
-        }*/
-
         if (animator.GetBool("Jump"))
         {
             col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
@@ -371,6 +308,8 @@ public class Player : MonoBehaviour
             col.offset = slidingOffset;
             col.size = slidingSize;
             Debug.Log("슬라이딩으로 인한 크기 조절");
+
+            // 물리 엔진 강제 업데이트
         }
         else
         {
