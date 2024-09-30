@@ -35,7 +35,7 @@ public class Test_03_Ground : TestBase
         groundCollider = GetComponent<BoxCollider2D>();
 
         // 3 ~ 10 사이의 숫자 뽑기
-        int randomNumber = Random.Range(3, 11);
+        int randomNumber = Random.Range(3, 8);
 
         /*// 뽑은 숫자만큼 Ground_0_Prefabs 생성
         for (int i = 0; i < randomNumber; i++)
@@ -49,11 +49,12 @@ public class Test_03_Ground : TestBase
 
         groundCollider.size = groundSize;*/
 
-        // 뽑은 숫자가 홀수이면
-        if(randomNumber / 2 == 1)
+        // 뽑은 숫자가 짝수이면
+        if(randomNumber % 2 == 0)
         {
-            // 양수 음수 반복해서 짝수일 때는 음수가 먼저 생성되기 때문에 오프셋 이동
+            // 음수 양수 반복해서 짝수일 때는 음수가 먼저 생성되기 때문에 오프셋 이동
             groundCollider.offset = new Vector2(-0.825f, 0);
+            //Debug.Log("오프셋 이동");
         }
 
         // 뽑은 숫자만큼 Ground_0_Prefabs 생성
