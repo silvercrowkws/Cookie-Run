@@ -77,6 +77,8 @@ public class Test_03_Ground : TestBase
                 }
             }
 
+
+            // 이쯤에 바닥 한 종류만 생성되는 것이 아니라 장애물이 있는 바닥도 확률적으로 생성되게 해야 할듯
             Vector2 position = new Vector2(xPosition, transform.position.y);
             Instantiate(Ground_0_Prefabs, position, Quaternion.identity, transform);
         }
