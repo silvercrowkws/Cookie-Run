@@ -56,12 +56,12 @@ public class Player : MonoBehaviour
     public float jumpPower = 7.5f;
     public float doublejumpPower = 5.0f;
 
-    Vector2 jumpOffset = new Vector2(0, -0.55f);
-    Vector2 defaultOffset = new Vector2(0, -0.65f);
-    Vector2 slidingOffset = new Vector2(0, -0.952394f);
+    Vector2 jumpOffset = new Vector2(0.25f, -0.65f);
+    Vector2 defaultOffset = new Vector2(0.25f, -0.9f);
+    Vector2 slidingOffset = new Vector2(0, -1.347176f);
 
-    Vector2 slidingSize = new Vector2(1, 0.6952119f);
-    Vector2 defaultSize = new Vector2(1, 1.3f);
+    Vector2 slidingSize = new Vector2(1, 1.005647f);
+    Vector2 defaultSize = new Vector2(1, 1.9f);
 
     private void Awake()
     {
@@ -204,6 +204,8 @@ public class Player : MonoBehaviour
         {
             Debug.Log("땅과 충돌");
 
+            colFix();
+
             // 착지 시 모든 점프 관련 상태 초기화
             jumpAble = true;         // 점프 가능하게 설정
             slidingAble = true;      // 슬라이딩 가능하게 설정
@@ -309,8 +311,6 @@ public class Player : MonoBehaviour
             col.offset = slidingOffset;
             col.size = slidingSize;
             Debug.Log("슬라이딩으로 인한 크기 조절");
-
-            // 물리 엔진 강제 업데이트
         }
         else
         {
