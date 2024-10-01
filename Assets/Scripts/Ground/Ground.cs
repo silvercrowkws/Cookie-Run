@@ -150,6 +150,7 @@ public class Ground : MonoBehaviour
     // 왜 충돌이 안되지
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        Debug.Log($"충돌한 오브젝트 이름: {collision.gameObject.name}");
         if (collision.gameObject.CompareTag("DeadZone"))
         {
             Debug.Log("데드존과 충돌");
