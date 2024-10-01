@@ -147,21 +147,23 @@ public class Ground : MonoBehaviour
 
     }
 
-    // 왜 충돌이 안되지
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log($"충돌한 오브젝트 이름: {collision.gameObject.name}");
         if (collision.gameObject.CompareTag("DeadZone"))
         {
             Debug.Log("데드존과 충돌");
+
+            // 새로운 바닥 생성 해야 됨
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("DeadZone"))
         {
             Debug.Log("데드존과 충돌 끝");
+
+            // 이 오브젝트 파괴 해야 됨
         }
     }
 }
