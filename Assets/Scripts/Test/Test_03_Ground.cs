@@ -17,6 +17,11 @@ public class Test_03_Ground : TestBase
     /// </summary>
     public GameObject Ground_0_Prefabs;
 
+    /// <summary>
+    /// Ground_Obstacle_0 의 프리팹
+    /// </summary>
+    public GameObject Ground_Obstacle_0_Prefabs;
+
     // 속도 정의 (초당 1씩 왼쪽으로 움직이도록 설정)
     public float speed = 1f;
 
@@ -35,7 +40,7 @@ public class Test_03_Ground : TestBase
         groundCollider = GetComponent<BoxCollider2D>();
 
         // 3 ~ 10 사이의 숫자 뽑기
-        int randomNumber = Random.Range(3, 8);
+        int randomNumber = Random.Range(3, 11);
 
         /*// 뽑은 숫자만큼 Ground_0_Prefabs 생성
         for (int i = 0; i < randomNumber; i++)
@@ -60,6 +65,7 @@ public class Test_03_Ground : TestBase
         // 뽑은 숫자만큼 Ground_0_Prefabs 생성
         for (int i = 0; i < randomNumber; i++)
         {
+            // x축으로 얼만큼 이동할 지
             float xPosition;
 
             // i가 0일 때는 0, 1일 때는 1.65, 2일 때는 -1.65, 3일 때는 3.3, 4일 때는 -3.3
@@ -78,9 +84,24 @@ public class Test_03_Ground : TestBase
             }
 
 
-            // 이쯤에 바닥 한 종류만 생성되는 것이 아니라 장애물이 있는 바닥도 확률적으로 생성되게 해야 할듯
+            // 10% 확률로 Ground_Obstacle_0_Prefabs 생성, 그렇지 않으면 Ground_0_Prefabs 생성
+            GameObject prefabToInstantiate;
+            if (Random.Range(0, 100) < 20) // 10% 확률
+            {
+                prefabToInstantiate = Ground_Obstacle_0_Prefabs;
+            }
+            else
+            {
+                prefabToInstantiate = Ground_0_Prefabs;
+            }
+
+            // 이쯤에 바닥 한 종류만 생성되는 것이 아니라 장애물이 있는 바닥도 확률적으로 생성되게 해야 할듯t
+            //Vector2 position = new Vector2(xPosition, transform.position.y);
+            //Instantiate(Ground_0_Prefabs, position, Quaternion.identity, transform);
+
+            // 위치에 프리팹 생성
             Vector2 position = new Vector2(xPosition, transform.position.y);
-            Instantiate(Ground_0_Prefabs, position, Quaternion.identity, transform);
+            Instantiate(prefabToInstantiate, position, Quaternion.identity, transform);
         }
 
         groundSize.x = (objectSpacing * randomNumber);

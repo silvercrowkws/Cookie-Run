@@ -171,6 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   seed: -1
   Ground_0_Prefabs: {fileID: 7073662627925975730, guid: d03c59c1b15f86a49b9e43f8de87fdc7, type: 3}
+  Ground_Obstacle_0_Prefabs: {fileID: 8158375968652351921, guid: 11b4851fd1a726446abbd18bfdee8ee9, type: 3}
   speed: 1
   objectSpacing: 1.65
 --- !u!61 &563295407
@@ -545,7 +546,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

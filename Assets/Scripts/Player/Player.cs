@@ -53,7 +53,14 @@ public class Player : MonoBehaviour
     /// </summary>
     bool slidingAble = false;
 
+    /// <summary>
+    /// 점프 파워
+    /// </summary>
     public float jumpPower = 7.5f;
+
+    /// <summary>
+    /// 더블 점프 파워
+    /// </summary>
     public float doublejumpPower = 5.0f;
 
     Vector2 jumpOffset = new Vector2(0.25f, -0.65f);
