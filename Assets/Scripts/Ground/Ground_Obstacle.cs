@@ -17,7 +17,7 @@ public class Ground_Obstacle : MonoBehaviour
 
     private void Awake()
     {
-        //Transform child = transform.GetChild(0);
+        //Transform childGround = transform.GetChild(0);
         obstacle = transform.GetChild(0);
     }
 
