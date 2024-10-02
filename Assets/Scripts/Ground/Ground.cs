@@ -1,9 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Ground : MonoBehaviour
 {
+    /// <summary>
+    /// 부모 오브젝트
+    /// </summary>
+    Ground_Parent parent;
+
     /// <summary>
     /// 바닥의 콜라이더
     /// </summary>
@@ -20,7 +26,7 @@ public class Ground : MonoBehaviour
     public GameObject Ground_Obstacle_0_Prefabs;
 
     // 속도 정의 (초당 1씩 왼쪽으로 움직이도록 설정)
-    public float speed = 1f;
+    public float groundMoveSpeed = 1f;
     
     Vector2 groundSize = new Vector2(0, 1.583333f);
 
@@ -39,31 +45,58 @@ public class Ground : MonoBehaviour
     /// </summary>
     private List<GameObject> spawnGroundList = new List<GameObject>();
 
+    /// <summary>
+    /// 데드존과의 충돌으로 새로운 바닥을 생성하라고 알리는 델리게이트
+    /// </summary>
+    public Action spawnNewGround;
+
     private void Start()
     {
         //childGround = transform.GetChild(0);
 
         //groundCollider = childGround.GetComponent<BoxCollider2D>();
+        parent = GetComponentInParent<Ground_Parent>();
+
         groundCollider = GetComponent<BoxCollider2D>();
 
-        // 3 ~ 10 사이의 숫자 뽑기
-        int randomNumber = Random.Range(3, 11);
+        Spawn();
+    }
 
-        // 뽑은 숫자가 짝수이면
+    /// <summary>
+    /// 땅을 스폰하는 함수
+    /// </summary>
+    private void Spawn()
+    {
+        // 10 ~ 11 사이의 숫자 뽑기
+        int randomNumber = UnityEngine.Random.Range(10, 12);
+
+        /*// 뽑은 숫자가 짝수이면
         if (randomNumber % 2 == 0)
         {
             // 음수 양수 반복해서 짝수일 때는 음수가 먼저 생성되기 때문에 오프셋 이동
-            groundCollider.offset = new Vector2(-0.825f, 0);
+            groundCollider.offset = new Vector2(0.825f, 0);
             //Debug.Log("오프셋 이동");
-        }
+        }*/
+
+        // 오프셋 계산 (2일 때 0.825, 3일 때 1.65, 4일 때 2.475, 5일 때 3.3)
+        float offsetSpacing = 0.825f;                               // 오프셋 간격
+        float offsetValue = (randomNumber - 1) * offsetSpacing;     // 계산된 오프셋 간격
+        
+        // 부모의 x위치에 맞게 수정
+        //groundCollider.offset = new Vector2(offsetValue - parent.transform.position.x, 0);        // 오프셋 수정
+        groundCollider.offset = new Vector2(offsetValue, 0);        // 오프셋 수정
 
         // 뽑은 숫자만큼 Ground_0_Prefabs 생성
         for (int i = 0; i < randomNumber; i++)
         {
+            // x축으로 얼만큼 이동할지
             // x축으로 얼만큼 이동할 지
-            float xPosition;
+            float xPosition = transform.position.x + (i * objectSpacing);  // 0, 1.65, 3.3, 4.95, 6.6, ...
 
-            // i가 0일 때는 0, 1일 때는 1.65, 2일 때는 -1.65, 3일 때는 3.3, 4일 때는 -3.3
+            // x축으로 얼만큼 이동할지
+            //float xPosition;
+
+            /*// i가 0일 때는 0, 1일 때는 1.65, 2일 때는 -1.65, 3일 때는 3.3, 4일 때는 -3.3
             if (i == 0)
             {
                 xPosition = 0; // 첫 번째 오브젝트는 0
@@ -76,12 +109,12 @@ public class Ground : MonoBehaviour
                 {
                     xPosition *= -1;
                 }
-            }
+            }*/
 
 
             // 10% 확률로 Ground_Obstacle_0_Prefabs 생성, 그렇지 않으면 Ground_0_Prefabs 생성
             GameObject prefabToInstantiate;
-            if (Random.Range(0, 100) < 10) // 10% 확률
+            if (UnityEngine.Random.Range(0, 100) < 10) // 10% 확률
             {
                 prefabToInstantiate = Ground_Obstacle_0_Prefabs;
             }
@@ -109,8 +142,6 @@ public class Ground : MonoBehaviour
         groundCollider.size = groundSize;
 
         StartCoroutine(MoveLeftCoroutine());
-
-        //GroundReCreat();
     }
 
     /// <summary>
@@ -123,14 +154,14 @@ public class Ground : MonoBehaviour
         while (true)
         {
             // 왼쪽으로 이동
-            transform.position += Vector3.left * speed * Time.deltaTime;
+            transform.position += Vector3.left * groundMoveSpeed * Time.deltaTime;
 
             // 다음 프레임까지 대기
             yield return null;
         }
     }
 
-    /// <summary>
+    /*/// <summary>
     /// 리스트의 마지막과 그 전 것이 모두 통과했는지 확인하는 함수
     /// </summary>
     private void GroundReCreat()
@@ -145,7 +176,7 @@ public class Ground : MonoBehaviour
         Debug.Log($"마지막 이전 오브젝트 이름 : {previousObject}");
 
 
-    }
+    }*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -154,6 +185,7 @@ public class Ground : MonoBehaviour
             Debug.Log("데드존과 충돌");
 
             // 새로운 바닥 생성 해야 됨
+            parent.SpawnGround();
         }
     }
 
@@ -162,8 +194,8 @@ public class Ground : MonoBehaviour
         if (collision.gameObject.CompareTag("DeadZone"))
         {
             Debug.Log("데드존과 충돌 끝");
-
-            // 이 오브젝트 파괴 해야 됨
+            
+            Destroy(gameObject);
         }
     }
 }
