@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Ground : MonoBehaviour
@@ -25,8 +26,8 @@ public class Ground : MonoBehaviour
     /// </summary>
     public GameObject Ground_Obstacle_0_Prefabs;
 
-    // 속도 정의 (초당 1씩 왼쪽으로 움직이도록 설정)
-    public float groundMoveSpeed = 1f;
+    // 속도 정의 (초당 1씩 왼쪽으로 움직이도록 설정 => 이제 부모에서 관리)
+    //public float groundMoveSpeed = 3.0f;
     
     Vector2 groundSize = new Vector2(0, 1.583333f);
 
@@ -50,6 +51,11 @@ public class Ground : MonoBehaviour
     /// </summary>
     public Action spawnNewGround;
 
+    /// <summary>
+    /// 바닥에 생성될 게임 오브젝트
+    /// </summary>
+    GameObject prefabToInstantiate;
+
     private void Start()
     {
         //childGround = transform.GetChild(0);
@@ -59,6 +65,9 @@ public class Ground : MonoBehaviour
 
         groundCollider = GetComponent<BoxCollider2D>();
 
+        //parent.currentGroundMoveSpeed += (parent.cycle * 0.25f);
+        //Debug.Log($"현재 바닥 이동 속도: {parent.currentGroundMoveSpeed}");
+
         Spawn();
     }
 
@@ -67,6 +76,9 @@ public class Ground : MonoBehaviour
     /// </summary>
     private void Spawn()
     {
+        parent.cycle++;
+        Debug.Log($"사이클 : {parent.cycle}");
+
         // 10 ~ 11 사이의 숫자 뽑기
         int randomNumber = UnityEngine.Random.Range(10, 12);
 
@@ -110,22 +122,33 @@ public class Ground : MonoBehaviour
                     xPosition *= -1;
                 }
             }*/
+            
 
-
-            // 10% 확률로 Ground_Obstacle_0_Prefabs 생성, 그렇지 않으면 Ground_0_Prefabs 생성
-            GameObject prefabToInstantiate;
-            if (UnityEngine.Random.Range(0, 100) < 10) // 10% 확률
+            // 첫 번째(0), 두 번째(1), 마지막, 마지막-1 인덱스일 경우 => 바닥의 0,1 마지막, 마지막-1 에서는 장애물 생성 안되게
+            if (i == 0 || i == 1 || i == randomNumber - 1 || i == randomNumber - 2)
             {
-                prefabToInstantiate = Ground_Obstacle_0_Prefabs;
+                // 무조건 Ground_0_Prefabs 생성
+                prefabToInstantiate = Ground_0_Prefabs;
             }
             else
             {
-                prefabToInstantiate = Ground_0_Prefabs;
+                // 10% 확률로 Ground_Obstacle_0_Prefabs 생성, 그렇지 않으면 Ground_0_Prefabs 생성
+                if (UnityEngine.Random.Range(0, 100) < 15)
+                {
+                    if(parent.cycle < 2)      // 첫 번째 생성되는 바닥에는 장애물이 없게
+                    {
+                        prefabToInstantiate = Ground_0_Prefabs;
+                    }
+                    else
+                    {
+                        prefabToInstantiate = Ground_Obstacle_0_Prefabs;
+                    }
+                }
+                else
+                {
+                    prefabToInstantiate = Ground_0_Prefabs;
+                }
             }
-
-            // 이쯤에 바닥 한 종류만 생성되는 것이 아니라 장애물이 있는 바닥도 확률적으로 생성되게 해야 할듯
-            //Vector2 position = new Vector2(xPosition, transform.position.y);
-            //Instantiate(Ground_0_Prefabs, position, Quaternion.identity, transform);
 
             // 위치에 프리팹 생성
             Vector2 position = new Vector2(xPosition, transform.position.y);
@@ -154,7 +177,10 @@ public class Ground : MonoBehaviour
         while (true)
         {
             // 왼쪽으로 이동
-            transform.position += Vector3.left * groundMoveSpeed * Time.deltaTime;
+            //transform.position += Vector3.left * groundMoveSpeed * Time.deltaTime;
+
+            // 부모의 현재 속도를 사용해 바닥 이동
+            transform.position += Vector3.left * parent.currentGroundMoveSpeed * Time.deltaTime;
 
             // 다음 프레임까지 대기
             yield return null;

@@ -23,7 +23,15 @@ public class Ground_Obstacle : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(ObstacleUP());
+        //StartCoroutine(ObstacleUP());
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("RiseZone"))
+        {
+            StartCoroutine(ObstacleUP());
+        }
     }
 
     /// <summary>

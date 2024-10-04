@@ -4,17 +4,45 @@ using UnityEngine;
 
 public class Ground_Parent : MonoBehaviour
 {
+    /// <summary>
+    /// 기본 속도
+    /// </summary>
+    public float baseGroundMoveSpeed = 3.0f;
+
+    /// <summary>
+    /// 현재 속도
+    /// </summary>
+    public float currentGroundMoveSpeed;
+
+    /// <summary>
+    /// 땅 프리팹
+    /// </summary>
     public GameObject groundPrefabs;
+
+    /// <summary>
+    /// 현재 사이클
+    /// </summary>
+    public int cycle = 0;
 
     private void Awake()
     {
-        // 자식이 동적으로 늘어나는데
-        //Transform child = transform.GetChild(0);
+        // 초기 속도 설정
+        currentGroundMoveSpeed = baseGroundMoveSpeed;
     }
 
     private void Start()
     {
         SpawnFirstGround();
+    }
+
+    /// <summary>
+    /// 바닥 속도 증가 함수
+    /// </summary>
+    /// <param name="increment"></param>
+    public void IncreaseSpeed(float increment)
+    {
+        currentGroundMoveSpeed += increment;
+        Debug.Log($"현재 바닥 속도: {currentGroundMoveSpeed}");
     }
 
     /// <summary>
@@ -32,6 +60,8 @@ public class Ground_Parent : MonoBehaviour
     /// </summary>
     public void SpawnGround()
     {
+        IncreaseSpeed(0.25f);
+
         // 땅 생성
         GameObject ground = Instantiate(groundPrefabs, transform.position, Quaternion.identity, transform);
         //Ground groundComponent = ground.GetComponent<Ground>();
