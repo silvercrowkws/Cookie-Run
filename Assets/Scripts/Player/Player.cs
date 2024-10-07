@@ -70,6 +70,10 @@ public class Player : MonoBehaviour
     Vector2 slidingSize = new Vector2(1, 1.005647f);
     Vector2 defaultSize = new Vector2(1, 1.9f);
 
+    // 중력
+    float defaultGravity = 0.75f;
+    float changeGravity = 3.0f;
+
     private void Awake()
     {
         inputActions = new PlayerInputActions();
@@ -86,6 +90,7 @@ public class Player : MonoBehaviour
         inputActions.Enable();
         inputActions.Move.Jump.performed += Jump;
         inputActions.Move.Sliding.started += StartSliding;      // 슬라이딩을 눌렀을 때 시작
+        //inputActions.Move.Sliding.performed += StartSliding;      // 슬라이딩을 눌렀을 때 시작
         inputActions.Move.Sliding.canceled += CancelSliding;    // 슬라이딩을 땠을 때 끝
     }
 
@@ -93,6 +98,7 @@ public class Player : MonoBehaviour
     {
         inputActions.Move.Sliding.canceled -= CancelSliding;    // 슬라이딩을 땠을 때 끝
         inputActions.Move.Sliding.started -= StartSliding;
+        //inputActions.Move.Sliding.performed -= StartSliding;
         inputActions.Move.Jump.performed -= Jump;
         inputActions.Disable();
     }
@@ -144,6 +150,8 @@ public class Player : MonoBehaviour
     /// <param name="context"></param>
     private void StartSliding(InputAction.CallbackContext context)
     {
+        rigid.gravityScale = changeGravity;
+
         if (slidingAble)
         {
             onGetBool();        //슬라이딩 전에 무슨 상태였는지 기록
@@ -164,6 +172,8 @@ public class Player : MonoBehaviour
     /// <param name="context"></param>
     private void CancelSliding(InputAction.CallbackContext context)
     {
+        rigid.gravityScale = defaultGravity;
+
         // 공중에서 이 함수가 호출되어도 상관은 없음
         Debug.Log("슬라이딩 끝");
 
@@ -217,7 +227,7 @@ public class Player : MonoBehaviour
             jumpAble = true;         // 점프 가능하게 설정
             slidingAble = true;      // 슬라이딩 가능하게 설정
             doublejumpAble = false;  // 더블 점프 불가하게 설정 (착지 후 다시 초기화 필요)
-
+            
             if (!animator.GetBool("Sliding"))                   // 슬라이딩 상태가 아니면
             {
                 animator.SetBool("Run", isRun);                 // 바닥에서 떨어지기 전에 Run 상태였으면 Run 활성화
