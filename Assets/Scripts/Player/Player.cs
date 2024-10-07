@@ -74,6 +74,14 @@ public class Player : MonoBehaviour
     float defaultGravity = 0.75f;
     float changeGravity = 3.0f;
 
+
+    /// <summary>
+    /// 슬라이딩 예약 변수 (공중에서 슬라이딩 키를 눌렀을 때 true로 설정)
+    /// </summary>
+    bool slideReady = false;
+
+
+
     private void Awake()
     {
         inputActions = new PlayerInputActions();
@@ -152,9 +160,18 @@ public class Player : MonoBehaviour
     {
         rigid.gravityScale = changeGravity;
 
+        if (!slidingAble && !animator.GetBool("Sliding"))
+        {
+            // 공중에서 슬라이딩을 누르면 슬라이딩 예약만 하고 중력만 변경
+            Debug.Log("슬라이딩 준비 중 (공중에서)");
+            slideReady = true;
+            return;
+        }
+
+
         if (slidingAble)
         {
-            onGetBool();        //슬라이딩 전에 무슨 상태였는지 기록
+            //onGetBool();        //슬라이딩 전에 무슨 상태였는지 기록
 
             Debug.Log("슬라이딩 시작");
 
@@ -173,6 +190,9 @@ public class Player : MonoBehaviour
     private void CancelSliding(InputAction.CallbackContext context)
     {
         rigid.gravityScale = defaultGravity;
+
+        slideReady = false;  // 슬라이딩 예약 취소
+
 
         // 공중에서 이 함수가 호출되어도 상관은 없음
         Debug.Log("슬라이딩 끝");
@@ -227,18 +247,31 @@ public class Player : MonoBehaviour
             jumpAble = true;         // 점프 가능하게 설정
             slidingAble = true;      // 슬라이딩 가능하게 설정
             doublejumpAble = false;  // 더블 점프 불가하게 설정 (착지 후 다시 초기화 필요)
-            
-            if (!animator.GetBool("Sliding"))                   // 슬라이딩 상태가 아니면
+
+
+            // 슬라이딩 예약이 되어 있을 경우 슬라이딩 시작
+            if (slideReady)
             {
-                animator.SetBool("Run", isRun);                 // 바닥에서 떨어지기 전에 Run 상태였으면 Run 활성화
-                animator.SetBool("Booster", isBooster);         // 바닥에서 떨어지기 전에 Booster 상태였으면 Booster 활성화
+                Debug.Log("땅에 닿았으므로 슬라이딩 시작");
+                StartSliding(new InputAction.CallbackContext());
+                slideReady = false;  // 슬라이딩 예약 해제
+            }
+            else
+            {
+                if (!animator.GetBool("Sliding"))                   // 슬라이딩 상태가 아니면
+                {
+                    animator.SetBool("Run", isRun);                 // 바닥에서 떨어지기 전에 Run 상태였으면 Run 활성화
+                    animator.SetBool("Booster", isBooster);         // 바닥에서 떨어지기 전에 Booster 상태였으면 Booster 활성화
+                }
+
+                //StartCoroutine(JumpDelayCoroutine());
+
+                // 애니메이션 트리거 초기화
+                animator.ResetTrigger("Jump");      // Jump 애니메이션 트리거를 초기화
+                animator.ResetTrigger("DoubleJump"); // DoubleJump 애니메이션 트리거를 초기화
             }
 
-            //StartCoroutine(JumpDelayCoroutine());
 
-            // 애니메이션 상태 초기화
-            animator.ResetTrigger("Jump");      // Jump 애니메이션 트리거를 초기화
-            animator.ResetTrigger("DoubleJump"); // DoubleJump 애니메이션 트리거를 초기화
         }
     }
 
@@ -263,7 +296,7 @@ public class Player : MonoBehaviour
             //isRun = animator.GetBool("Run");              // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
             //isBooster = animator.GetBool("Booster");      // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
 
-            onGetBool();
+            onGetBool();                                    // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
 
             slidingAble = false;                            // 바닥에서 떨어졌을 때는 슬라이딩 안되게
 
