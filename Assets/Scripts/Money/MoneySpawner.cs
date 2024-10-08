@@ -62,6 +62,9 @@ public class MoneySpawner : MonoBehaviour
         SpawnMoney();
     }
 
+    /// <summary>
+    /// 돈을 스폰시키는 함수
+    /// </summary>
     public void SpawnMoney()
     {
         int randomMoneyShape = Random.Range(0, 6);
