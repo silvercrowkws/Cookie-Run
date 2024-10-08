@@ -8,6 +8,9 @@ TagManager:
   - Obstacle
   - DeadZone
   - RiseZone
+  - Money
+  - Gold
+  - Silver
   layers:
   - Default
   - TransparentFX

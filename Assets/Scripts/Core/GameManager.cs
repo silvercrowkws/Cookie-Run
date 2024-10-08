@@ -50,7 +50,6 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public Action<float> moneyChange;
 
-
     /// <summary>
     /// 기본 속도
     /// </summary>
