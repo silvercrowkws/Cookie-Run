@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Ground_Parent : MonoBehaviour
 {
-    /// <summary>
+    /*/// <summary>
     /// 기본 속도
     /// </summary>
     public float baseGroundMoveSpeed = 3.0f;
@@ -12,7 +12,7 @@ public class Ground_Parent : MonoBehaviour
     /// <summary>
     /// 현재 속도
     /// </summary>
-    public float currentGroundMoveSpeed;
+    public float currentGroundMoveSpeed;*/
 
     /// <summary>
     /// 땅 프리팹
@@ -24,18 +24,24 @@ public class Ground_Parent : MonoBehaviour
     /// </summary>
     public int cycle = 0;
 
+    /// <summary>
+    /// 게임 매니저
+    /// </summary>
+    GameManager gameManager;
+
     private void Awake()
     {
         // 초기 속도 설정
-        currentGroundMoveSpeed = baseGroundMoveSpeed;
+        //currentGroundMoveSpeed = baseGroundMoveSpeed;
     }
 
     private void Start()
     {
         SpawnFirstGround();
+        gameManager = GameManager.Instance;
     }
 
-    /// <summary>
+    /*/// <summary>
     /// 바닥 속도 증가 함수
     /// </summary>
     /// <param name="increment"></param>
@@ -43,7 +49,7 @@ public class Ground_Parent : MonoBehaviour
     {
         currentGroundMoveSpeed += increment;
         Debug.Log($"현재 바닥 속도: {currentGroundMoveSpeed}");
-    }
+    }*/
 
     /// <summary>
     /// 게임 생성 시 첫 번째 땅을 생성하는 함수
@@ -60,7 +66,7 @@ public class Ground_Parent : MonoBehaviour
     /// </summary>
     public void SpawnGround()
     {
-        IncreaseSpeed(0.25f);
+        gameManager.IncreaseSpeed(0.25f);
 
         // 땅 생성
         GameObject ground = Instantiate(groundPrefabs, transform.position, Quaternion.identity, transform);

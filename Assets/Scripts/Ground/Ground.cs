@@ -7,6 +7,11 @@ using UnityEngine;
 public class Ground : MonoBehaviour
 {
     /// <summary>
+    /// 게임 매니저
+    /// </summary>
+    GameManager gameManager;
+
+    /// <summary>
     /// 부모 오브젝트
     /// </summary>
     Ground_Parent parent;
@@ -26,7 +31,7 @@ public class Ground : MonoBehaviour
     /// </summary>
     public GameObject Ground_Obstacle_0_Prefabs;
 
-    // 속도 정의 (초당 1씩 왼쪽으로 움직이도록 설정 => 이제 부모에서 관리)
+    // 속도 정의 (초당 1씩 왼쪽으로 움직이도록 설정 => 이제 부모에서 관리 => 이제 게임매니저에서 관리)
     //public float groundMoveSpeed = 3.0f;
     
     Vector2 groundSize = new Vector2(0, 1.583333f);
@@ -67,6 +72,8 @@ public class Ground : MonoBehaviour
 
         //parent.currentGroundMoveSpeed += (parent.cycle * 0.25f);
         //Debug.Log($"현재 바닥 이동 속도: {parent.currentGroundMoveSpeed}");
+
+        gameManager = GameManager.Instance;
 
         Spawn();
     }
@@ -180,7 +187,7 @@ public class Ground : MonoBehaviour
             //transform.position += Vector3.left * groundMoveSpeed * Time.deltaTime;
 
             // 부모의 현재 속도를 사용해 바닥 이동
-            transform.position += Vector3.left * parent.currentGroundMoveSpeed * Time.deltaTime;
+            transform.position += Vector3.left * gameManager.currentGroundMoveSpeed * Time.deltaTime;
 
             // 다음 프레임까지 대기
             yield return null;
