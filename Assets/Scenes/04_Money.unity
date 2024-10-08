@@ -567,8 +567,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Money_Gold_Plus: {fileID: 6218615878070121282, guid: e9f2264c9c75abc48a48591589b5b9ca, type: 3}
   Money_Gold_Stairs: {fileID: 5024641265179061623, guid: 492bab0f404156b4bb41c788077146a9, type: 3}
+  Money_Gold_Line: {fileID: 32050058729083997, guid: 111dd0458754c5249b9fac98aa41d842, type: 3}
   Money_Silver_Line: {fileID: 5005909923829810077, guid: ceb4f411ac9b8cb48872b3a5b00c38b1, type: 3}
   Money_Silver_Arrow: {fileID: 6532884291650213962, guid: d249334fdfdb33241a66678f5acd017e, type: 3}
+  Money_Silver_Smile: {fileID: 4583621480122165622, guid: 9d3d4a906ed6686469c636349deab457, type: 3}
 --- !u!1 &1823406006
 GameObject:
   m_ObjectHideFlags: 0

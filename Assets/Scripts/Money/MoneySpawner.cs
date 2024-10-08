@@ -13,8 +13,10 @@ public class MoneySpawner : MonoBehaviour
     // money 모양 프리팹
     public GameObject Money_Gold_Plus;
     public GameObject Money_Gold_Stairs;
+    public GameObject Money_Gold_Line;
     public GameObject Money_Silver_Line;
     public GameObject Money_Silver_Arrow;
+    public GameObject Money_Silver_Smile;
 
     // Money_Gold_Plus 의 최대최소 위치
     int goldPlusMin = -2;
@@ -24,6 +26,10 @@ public class MoneySpawner : MonoBehaviour
     int goldStairsMin = -3;
     int goldStairsMax = 0;
 
+    // Money_Gold_Line 의 최대최소 위치
+    int goldLineMin = -2;
+    int goldLineMax = 5;
+
     // Money_Silver_Line 의 최대최소 위치
     int silverLineMin = -3;
     int silverLineMax = 5;
@@ -31,6 +37,19 @@ public class MoneySpawner : MonoBehaviour
     // Money_Silver_Arrow 의 최대최소 위치
     int silverArrowMin = -1;
     int silverArrowMax = 3;
+
+    // Money_Silver_Smile 의 최대최소 위치
+    int silverSmileMin = 0;
+    int silverSmileMax = 4;
+
+    /*
+    Money_Gold_Plus = y값이 -2 ~ 3 사이
+    Money_Gold_Stairs = y값이 - 3 ~ -1 사이
+    Money_Gold_Line = y값이 -2 ~ 4 사이
+    Money_Silver_Line = y값이 - 3 ~ 4 사이
+    Money_Silver_Arrow = y값이 - 1 ~ 2 사이
+    Money_Silver_Smile = y값이 0 ~ 3 사이
+    */
 
 
     private void Awake()
@@ -45,7 +64,7 @@ public class MoneySpawner : MonoBehaviour
 
     public void SpawnMoney()
     {
-        int randomMoneyShape = Random.Range(0, 4);
+        int randomMoneyShape = Random.Range(0, 6);
 
         // 스폰 위치의 Y 값을 랜덤으로 결정하는 변수
         int randomY = 0;
@@ -77,6 +96,16 @@ public class MoneySpawner : MonoBehaviour
                 randomY = Random.Range(silverArrowMin, silverArrowMax);
                 spawnPosition = new Vector2(transform.position.x, randomY);
                 money = Instantiate(Money_Silver_Arrow, spawnPosition, Quaternion.identity, transform);
+                break;
+            case 4:
+                randomY = Random.Range(goldLineMin, goldLineMax);
+                spawnPosition = new Vector2(transform.position.x, randomY);
+                money = Instantiate(Money_Gold_Line, spawnPosition, Quaternion.identity, transform);
+                break;
+            case 5:
+                randomY = Random.Range(silverSmileMin, silverSmileMax);
+                spawnPosition = new Vector2(transform.position.x, randomY);
+                money = Instantiate(Money_Silver_Smile, spawnPosition, Quaternion.identity, transform);
                 break;
         }        
 
