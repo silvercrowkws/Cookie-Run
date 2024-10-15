@@ -16,7 +16,7 @@ public class MoneySpawner : MonoBehaviour
     public GameObject Money_Gold_Line;
     public GameObject Money_Silver_Line;
     public GameObject Money_Silver_Arrow;
-    public GameObject Money_Silver_Smile;
+    public GameObject Money_Silver_Heart;
 
     // Money_Gold_Plus 의 최대최소 위치
     int goldPlusMin = -2;
@@ -38,8 +38,8 @@ public class MoneySpawner : MonoBehaviour
     int silverArrowMin = -1;
     int silverArrowMax = 3;
 
-    // Money_Silver_Smile 의 최대최소 위치
-    int silverSmileMin = 0;
+    // Money_Silver_Heart 의 최대최소 위치
+    int silverSmileMin = 2;
     int silverSmileMax = 4;
 
     /*
@@ -48,7 +48,7 @@ public class MoneySpawner : MonoBehaviour
     Money_Gold_Line = y값이 -2 ~ 4 사이
     Money_Silver_Line = y값이 - 3 ~ 4 사이
     Money_Silver_Arrow = y값이 - 1 ~ 2 사이
-    Money_Silver_Smile = y값이 0 ~ 3 사이
+    Money_Silver_Heart = y값이 0 ~ 3 사이
     */
 
 
@@ -108,7 +108,7 @@ public class MoneySpawner : MonoBehaviour
             case 5:
                 randomY = Random.Range(silverSmileMin, silverSmileMax);
                 spawnPosition = new Vector2(transform.position.x, randomY);
-                money = Instantiate(Money_Silver_Smile, spawnPosition, Quaternion.identity, transform);
+                money = Instantiate(Money_Silver_Heart, spawnPosition, Quaternion.identity, transform);
                 break;
         }        
 

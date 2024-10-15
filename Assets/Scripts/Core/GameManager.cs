@@ -40,7 +40,7 @@ public class GameManager : Singleton<GameManager>
                 //currentMoney = value;
                 currentMoney = Mathf.Clamp(value, 0, 999);
                 Debug.Log($"남은 돈 : {currentMoney}");
-                moneyChange?.Invoke(currentMoney);
+                onMoneyChange?.Invoke(currentMoney);
             }
         }
     }
@@ -48,7 +48,7 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// 돈이 변경되었음을 알리는 델리게이트(UI 수정용)
     /// </summary>
-    public Action<float> moneyChange;
+    public Action<float> onMoneyChange;
 
     /// <summary>
     /// 기본 속도
