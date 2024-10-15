@@ -64,16 +64,7 @@ public class ItemBase : MonoBehaviour
     protected virtual void Start()
     {
         player = GameManager.Instance.Player;
-        player.onItemConnected += SendDelegate;
         StartCoroutine(MoveLeftItemCoroutine());
-    }
-
-    /// <summary>
-    /// 플레이어와 아이템 사이의 연결이 끝나서 아이템 사용하라고 알리는 델리게이트
-    /// </summary>
-    private void SendDelegate()
-    {
-        onItemUse?.Invoke();
     }
 
     /// <summary>

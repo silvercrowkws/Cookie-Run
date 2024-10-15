@@ -304,35 +304,21 @@ public class Player : MonoBehaviour
     /// </summary>
     ItemBase itemBase;
 
-    /// <summary>
-    /// 아이템과 연결되었다고 알리는 델리게이트
-    /// </summary>
-    public Action onItemConnected;
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Item"))
         {
             Debug.Log("아이템 충돌 확인");
             itemBase = collision.GetComponent<ItemBase>();      // 충돌한 오브젝트의 아이템 베이스를 가져옴
-            
-            // 아이템 베이스에서 아이템 실행하라고 델리게이트 보내면
-            // 아이템 쪽에서 충돌이 먼저이기 때문에
-            // 플레이어에서 itemBase를 찾으면 늦음
-            // 그래서 플레이어에서 아이템과 충돌을 검출하면
-            // 아이템 측에서 onItemUse 델리게이트를 보내도록 수정
 
             if (itemBase != null)
             {
-                onItemConnected?.Invoke();
-                //Debug.Log("ItemBase를 찾음");
+                Huge();
             }
             else
             {
                 Debug.LogWarning("ItemBase를 찾지 못함");
             }
-            // onItemConnected 이거 다음에부터 onItemUse 이게 됨
-            itemBase.onItemUse += Huge;
         }
     }
 
@@ -418,9 +404,11 @@ public class Player : MonoBehaviour
     /// </summary>
     float hugeelTime = 1.0f;
 
+    /// <summary>
+    /// 거대화 코루틴을 실행시키는 함수
+    /// </summary>
     private void Huge()
     {
-        Debug.Log("Huge 함수 시작");
         StartCoroutine(HugeCoroutine(hugeelTime));
     }
 
