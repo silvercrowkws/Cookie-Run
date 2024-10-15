@@ -204,15 +204,6 @@ public class Player : MonoBehaviour
         colFix();
     }
 
-    /*private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Ground"))
-        {
-            animator.SetBool("Run", isRun);                 // 바닥에서 떨어지기 전에 Run 상태였으면 Run 활성화
-            animator.SetBool("Booster", isBooster);         // 바닥에서 떨어지기 전에 Booster 상태였으면 Booster 활성화
-        }
-    }*/
-
     /// <summary>
     /// 충돌 중일 때
     /// </summary>
@@ -309,6 +300,43 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// 아이템 베이스
+    /// </summary>
+    ItemBase itemBase;
+
+    /// <summary>
+    /// 아이템과 연결되었다고 알리는 델리게이트
+    /// </summary>
+    public Action onItemConnected;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Item"))
+        {
+            Debug.Log("아이템 충돌 확인");
+            itemBase = collision.GetComponent<ItemBase>();      // 충돌한 오브젝트의 아이템 베이스를 가져옴
+            
+            // 아이템 베이스에서 아이템 실행하라고 델리게이트 보내면
+            // 아이템 쪽에서 충돌이 먼저이기 때문에
+            // 플레이어에서 itemBase를 찾으면 늦음
+            // 그래서 플레이어에서 아이템과 충돌을 검출하면
+            // 아이템 측에서 onItemUse 델리게이트를 보내도록 수정
+
+            if (itemBase != null)
+            {
+                onItemConnected?.Invoke();
+                //Debug.Log("ItemBase를 찾음");
+            }
+            else
+            {
+                Debug.LogWarning("ItemBase를 찾지 못함");
+            }
+            // onItemConnected 이거 다음에부터 onItemUse 이게 됨
+            itemBase.onItemUse += Huge;
+        }
+    }
+
+    /// <summary>
     /// 다시 점프 가능하게 만드는 코루틴
     /// </summary>
     /// <returns></returns>
@@ -368,5 +396,64 @@ public class Player : MonoBehaviour
             col.size = defaultSize;             // 크기 디폴트
             Debug.Log("점프이외 인한 크기 조절");
         }
+    }
+
+
+
+
+
+
+    /// <summary>
+    /// 거대화 스케일
+    /// </summary>
+    Vector3 hugeScale = new Vector3(3.5f, 3.5f, 1);
+
+    /// <summary>
+    /// 기본 스케일
+    /// </summary>
+    Vector3 defaultScale = new Vector3(1, 1, 1);
+
+    /// <summary>
+    /// 커지는데 걸리는 시간
+    /// </summary>
+    float hugeelTime = 1.0f;
+
+    private void Huge()
+    {
+        Debug.Log("Huge 함수 시작");
+        StartCoroutine(HugeCoroutine(hugeelTime));
+    }
+
+    /// <summary>
+    /// 플레이어를 거대화 시키는 코루틴
+    /// </summary>
+    /// <param name="hugeelTime">거대화에 걸리는 시간</param>
+    /// <returns></returns>
+    IEnumerator HugeCoroutine(float hugeelTime)
+    {
+        Debug.Log("HugeCoroutine 코루틴 시작");
+        // 서서히 크기를 키우기
+        float timeElapsed = 0f;
+
+        while (timeElapsed < hugeelTime)
+        {
+            transform.localScale = Vector3.Lerp(defaultScale, hugeScale, timeElapsed / hugeelTime);
+            timeElapsed += Time.deltaTime;
+            yield return null; // 프레임마다 업데이트
+        }
+        transform.localScale = hugeScale; // 최종적으로 hugeScale로 설정
+
+        yield return new WaitForSeconds(itemBase.itemDuration);
+
+        // 지속시간 후 원래 크기로 되돌리기
+        timeElapsed = 0f;
+
+        while (timeElapsed < hugeelTime)
+        {
+            transform.localScale = Vector3.Lerp(hugeScale, defaultScale, timeElapsed / hugeelTime);
+            timeElapsed += Time.deltaTime;
+            yield return null; // 프레임마다 업데이트
+        }
+        transform.localScale = defaultScale; // 최종적으로 defaultScale로 설정
     }
 }
