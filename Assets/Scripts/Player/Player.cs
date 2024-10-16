@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static Unity.Collections.Unicode;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Player : MonoBehaviour
 {
@@ -20,12 +21,17 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 리지드바디
     /// </summary>
-    Rigidbody2D rigid;
+    Rigidbody2D playerRigid;
 
     /// <summary>
     /// 콜라이더
     /// </summary>
-    BoxCollider2D col;
+    BoxCollider2D playerCollider;
+
+    /// <summary>
+    /// 스프라이트 렌더러
+    /// </summary>
+    SpriteRenderer playerSpriteRenderer;
 
     /// <summary>
     /// 바닥에서 떨어지기 전에 Run 상태였는지 확인하는 bool 변수
@@ -75,10 +81,57 @@ public class Player : MonoBehaviour
     float changeGravity = 3.0f;
 
 
+    // 아이템 관련 --------------------------------------------------------------------------------
+
+    /// <summary>
+    /// 아이템 베이스
+    /// </summary>
+    ItemBase itemBase;
+
     /// <summary>
     /// 슬라이딩 예약 변수 (공중에서 슬라이딩 키를 눌렀을 때 true로 설정)
     /// </summary>
     bool slideReady = false;
+
+    /// <summary>
+    /// 거대화 스케일
+    /// </summary>
+    Vector3 hugeScale = new Vector3(3.5f, 3.5f, 1);
+
+    /// <summary>
+    /// 기본 스케일
+    /// </summary>
+    Vector3 defaultScale = new Vector3(1, 1, 1);
+
+    /// <summary>
+    /// 커지는데 걸리는 시간
+    /// </summary>
+    float hugeelTime = 1.0f;
+
+    /// <summary>
+    /// 러쉬 하는데 걸리는 시간
+    /// </summary>
+    float rushelTime = 1.0f;
+
+    /// <summary>
+    /// 알파값이 0인 컬러
+    /// </summary>
+    Color zeroAlphaColor;
+
+    /// <summary>
+    /// 알파값이 1인 컬러
+    /// </summary>
+    Color oneAlphaColor;
+
+    /// <summary>
+    /// 아이템 사용 종료 깜빡이는 시간
+    /// </summary>
+    float blinkTime = 3.0f;
+
+    /// <summary>
+    /// 아이템 중복 사용 방지용 bool 변수
+    /// </summary>
+    bool itemAble = true;
 
 
 
@@ -86,8 +139,9 @@ public class Player : MonoBehaviour
     {
         inputActions = new PlayerInputActions();
 
-        rigid = GetComponent<Rigidbody2D>();
-        col = GetComponent<BoxCollider2D>();
+        playerRigid = GetComponent<Rigidbody2D>();
+        playerCollider = GetComponent<BoxCollider2D>();
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
 
         animator = GetComponent<Animator>();
         animator.SetBool("Run", true);      // 초기 세팅은 Run true 상태
@@ -113,7 +167,13 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        
+        zeroAlphaColor = playerSpriteRenderer.color;
+        zeroAlphaColor.a = 0;
+
+        oneAlphaColor = playerSpriteRenderer.color;
+        oneAlphaColor.a = 1;
+
+        playerSpriteRenderer.color = oneAlphaColor;           // 생성될 때는 알파값 1로 설정
     }
 
     /// <summary>
@@ -131,7 +191,7 @@ public class Player : MonoBehaviour
 
             jumpAble = false;           // 점프 이후에는 점프가 불가능하게 설정
             animator.SetTrigger("Jump");
-            rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+            playerRigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
 
             colFix();
 
@@ -146,7 +206,7 @@ public class Player : MonoBehaviour
 
             doublejumpAble = false;     // 더블 점프 후에는 다시 불가능
             animator.SetTrigger("DoubleJump");
-            rigid.AddForce(Vector2.up * doublejumpPower, ForceMode2D.Impulse);
+            playerRigid.AddForce(Vector2.up * doublejumpPower, ForceMode2D.Impulse);
 
             colFix();
         }
@@ -158,7 +218,7 @@ public class Player : MonoBehaviour
     /// <param name="context"></param>
     private void StartSliding(InputAction.CallbackContext context)
     {
-        rigid.gravityScale = changeGravity;
+        playerRigid.gravityScale = changeGravity;
 
         if (!slidingAble && !animator.GetBool("Sliding"))
         {
@@ -189,7 +249,7 @@ public class Player : MonoBehaviour
     /// <param name="context"></param>
     private void CancelSliding(InputAction.CallbackContext context)
     {
-        rigid.gravityScale = defaultGravity;
+        playerRigid.gravityScale = defaultGravity;
 
         slideReady = false;  // 슬라이딩 예약 취소
 
@@ -299,11 +359,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 아이템 베이스
-    /// </summary>
-    ItemBase itemBase;
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Item"))
@@ -313,7 +368,16 @@ public class Player : MonoBehaviour
 
             if (itemBase != null)
             {
-                Huge();
+                if(itemBase is Item_Huge itemHuge)
+                {
+                    //Debug.Log("itemHuge 찾음");
+                    Huge();
+                }
+                else if(itemBase is Item_Rush itemRush)
+                {
+                    //Debug.Log("itemRush 찾음");
+                    Rush();
+                }
             }
             else
             {
@@ -366,50 +430,38 @@ public class Player : MonoBehaviour
     {
         if (animator.GetBool("Jump"))
         {
-            col.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
-            col.size = defaultSize;             // 크기 디폴트
+            playerCollider.offset = jumpOffset;            // 점프 했을 때는 콜라이더 Offset 수정
+            playerCollider.size = defaultSize;             // 크기 디폴트
             Debug.Log("점프로 인한 크기 조절");
         }
         else if (animator.GetBool("Sliding"))
         {
-            col.offset = slidingOffset;
-            col.size = slidingSize;
+            playerCollider.offset = slidingOffset;
+            playerCollider.size = slidingSize;
             Debug.Log("슬라이딩으로 인한 크기 조절");
         }
         else
         {
-            col.offset = defaultOffset;         // 점프 이외의 상황에는 콜라이더 Offset 원래대로
-            col.size = defaultSize;             // 크기 디폴트
+            playerCollider.offset = defaultOffset;         // 점프 이외의 상황에는 콜라이더 Offset 원래대로
+            playerCollider.size = defaultSize;             // 크기 디폴트
             Debug.Log("점프이외 인한 크기 조절");
         }
     }
 
-
-
-
-
-
-    /// <summary>
-    /// 거대화 스케일
-    /// </summary>
-    Vector3 hugeScale = new Vector3(3.5f, 3.5f, 1);
-
-    /// <summary>
-    /// 기본 스케일
-    /// </summary>
-    Vector3 defaultScale = new Vector3(1, 1, 1);
-
-    /// <summary>
-    /// 커지는데 걸리는 시간
-    /// </summary>
-    float hugeelTime = 1.0f;
-
+    // 아이템 관련 --------------------------------------------------------------------------------
     /// <summary>
     /// 거대화 코루틴을 실행시키는 함수
     /// </summary>
     private void Huge()
     {
-        StartCoroutine(HugeCoroutine(hugeelTime));
+        if (itemAble)
+        {
+            StartCoroutine(HugeCoroutine(hugeelTime));
+        }
+        else
+        {
+            Debug.LogWarning("이미 아이템 사용중");
+        }
     }
 
     /// <summary>
@@ -419,7 +471,12 @@ public class Player : MonoBehaviour
     /// <returns></returns>
     IEnumerator HugeCoroutine(float hugeelTime)
     {
+        itemAble = false;
         Debug.Log("HugeCoroutine 코루틴 시작");
+
+        // Obstacle과 충돌 무시
+        IgnoreObstacleCollision(true);
+
         // 서서히 크기를 키우기
         float timeElapsed = 0f;
 
@@ -427,11 +484,27 @@ public class Player : MonoBehaviour
         {
             transform.localScale = Vector3.Lerp(defaultScale, hugeScale, timeElapsed / hugeelTime);
             timeElapsed += Time.deltaTime;
-            yield return null; // 프레임마다 업데이트
+            yield return null;                      // 프레임마다 업데이트
         }
-        transform.localScale = hugeScale; // 최종적으로 hugeScale로 설정
+        transform.localScale = hugeScale;           // 최종적으로 hugeScale로 설정
+        
+        yield return new WaitForSeconds(itemBase.itemDuration - blinkTime);     // itemDuration - blinkTime 초에 깜빡임 시작 => 7초 후
 
-        yield return new WaitForSeconds(itemBase.itemDuration);
+        timeElapsed = 0f;
+
+        // 3초 반복
+        while (timeElapsed < blinkTime)
+        {
+            playerSpriteRenderer.color = zeroAlphaColor;        // 플레이어의 알파값 0으로 조정
+            yield return new WaitForSeconds(0.2f);              // 0.2초 기다리고
+            playerSpriteRenderer.color = oneAlphaColor;         // 플레이어의 알파값 1로 조정
+            yield return new WaitForSeconds(1.0f);              // 1초 기다리고
+
+            // 경과 시간 계산
+            timeElapsed += 1.2f;                    // 0.2초 + 1.0초 대기 시간
+
+            //yield return null;
+        }
 
         // 지속시간 후 원래 크기로 되돌리기
         timeElapsed = 0f;
@@ -440,8 +513,94 @@ public class Player : MonoBehaviour
         {
             transform.localScale = Vector3.Lerp(hugeScale, defaultScale, timeElapsed / hugeelTime);
             timeElapsed += Time.deltaTime;
-            yield return null; // 프레임마다 업데이트
+            yield return null;                      // 프레임마다 업데이트
         }
-        transform.localScale = defaultScale; // 최종적으로 defaultScale로 설정
+        transform.localScale = defaultScale;        // 최종적으로 defaultScale로 설정
+
+        // Obstacle과 충돌 무시 해제
+        IgnoreObstacleCollision(false);
+        itemAble = true;
+    }
+
+    /// <summary>
+    /// Obstacle 태그를 가진 오브젝트와의 충돌을 무시하거나 복구하는 함수
+    /// </summary>
+    /// <param name="ignore">true면 충돌 무시, false면 충돌 복구</param>
+    void IgnoreObstacleCollision(bool ignore)
+    {
+        // ObstacleLayer 레이어와의 충돌을 무시
+        int playerLayer = LayerMask.NameToLayer("PlayerLayer");
+        int obstacleLayer = LayerMask.NameToLayer("ObstacleLayer");
+        
+        if (playerLayer < 0 || playerLayer > 31 || obstacleLayer < 0 || obstacleLayer > 31)
+        {
+            Debug.LogError("레이어 번호가 범위를 벗어났다.");
+            return;
+        }
+
+        // 레이어 간의 충돌 무시 설정
+        Physics2D.IgnoreLayerCollision(playerLayer, obstacleLayer, ignore);
+
+        //Debug.Log($"Obstacle 레이어와의 충돌 무시 : {ignore}");
+    }
+
+    /// <summary>
+    /// 러쉬 코루틴을 실행시키는 함수
+    /// </summary>
+    private void Rush()
+    {
+        if (itemAble)
+        {
+            StartCoroutine(RushCoroutine(rushelTime));
+        }
+        else
+        {
+            Debug.LogWarning("이미 아이템 사용중");
+        }
+    }
+
+    /// <summary>
+    /// 플레이어를 러쉬 시키는 코루틴
+    /// </summary>
+    /// <param name="rushelTime">러쉬 시키는데 걸리는 시간</param>
+    /// <returns></returns>
+    IEnumerator RushCoroutine(float rushelTime)
+    {
+        itemAble = false;
+        Debug.Log("RushCoroutine 코루틴 시작");
+
+        // Obstacle과 충돌 무시
+        IgnoreObstacleCollision(true);
+
+        animator.SetBool("Run", false);         // 달리기 비활성화
+        animator.SetBool("Sliding", false);     // 슬라이딩 비활성화
+        animator.SetBool("Booster", true);      // 부스터 활성화
+
+        //yield return new WaitForSeconds(itemBase.itemDuration);
+        yield return new WaitForSeconds(itemBase.itemDuration - blinkTime);     // itemDuration - blinkTime 초에 깜빡임 시작 => 7초 후
+
+        float timeElapsed = 0f;
+
+        // 3초 반복
+        while (timeElapsed < blinkTime)
+        {
+            playerSpriteRenderer.color = zeroAlphaColor;        // 플레이어의 알파값 0으로 조정
+            yield return new WaitForSeconds(0.2f);              // 0.2초 기다리고
+            playerSpriteRenderer.color = oneAlphaColor;         // 플레이어의 알파값 1로 조정
+            yield return new WaitForSeconds(1.0f);              // 1초 기다리고
+
+            // 경과 시간 계산
+            timeElapsed += 1.2f;                    // 0.2초 + 1.0초 대기 시간
+
+            //yield return null;
+        }
+
+        animator.SetBool("Booster", false);     // 부스터 비활성화
+        animator.SetBool("Sliding", false);     // 슬라이딩 비활성화
+        animator.SetBool("Run", true);         // 달리기 비활성화
+
+        // Obstacle과 충돌 해제
+        IgnoreObstacleCollision(false);
+        itemAble = true;
     }
 }

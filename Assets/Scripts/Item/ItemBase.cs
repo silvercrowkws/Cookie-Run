@@ -43,7 +43,7 @@ public class ItemBase : MonoBehaviour
     /// <summary>
     /// 플레이어
     /// </summary>
-    protected Player player;
+    //protected Player player;
 
     protected virtual void Awake()
     {
@@ -63,7 +63,7 @@ public class ItemBase : MonoBehaviour
 
     protected virtual void Start()
     {
-        player = GameManager.Instance.Player;
+        //player = GameManager.Instance.Player;
         StartCoroutine(MoveLeftItemCoroutine());
     }
 

@@ -139,8 +139,8 @@ public class Ground : MonoBehaviour
             }
             else
             {
-                // 10% 확률로 Ground_Obstacle_0_Prefabs 생성, 그렇지 않으면 Ground_0_Prefabs 생성
-                if (UnityEngine.Random.Range(0, 100) < 15)
+                // 15% 확률로 Ground_Obstacle_0_Prefabs 생성, 그렇지 않으면 Ground_0_Prefabs 생성
+                if (UnityEngine.Random.Range(0, 100) < 99)
                 {
                     if(parent.cycle < 2)      // 첫 번째 생성되는 바닥에는 장애물이 없게
                     {
