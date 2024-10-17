@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,10 @@ public class GetMoney : MonoBehaviour
     /// </summary>
     SpriteRenderer spriteRenderer;
 
+    /// <summary>
+    /// 플레이어
+    /// </summary>
+    Player player;
 
     private void Awake()
     {
@@ -26,6 +31,17 @@ public class GetMoney : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
+    }
+
+    private void OnEnable()
+    {
+        player = GameManager.Instance.Player;
+        player.onMagnet += OnMagnet;        // 활성화될 때마다 이벤트 구독
+    }
+
+    private void OnDisable()
+    {
+        player.onMagnet -= OnMagnet;        // 비활성화될 때 이벤트 해제
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -71,5 +87,49 @@ public class GetMoney : MonoBehaviour
 
         // 게임 오브젝트 삭제
         Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// 마그넷 코루틴을 실행시키는 함수
+    /// </summary>
+    /// <param name="itemDuration">플레이어가 Item_Magnet에서 받아온 아이템 지속 시간</param>
+    private void OnMagnet(float itemDuration)
+    {
+        //Debug.Log("플레이어 델리게이트 받아서 함수 실행");
+        StartCoroutine(MagnetCoroutine(itemDuration));
+    }
+
+    /// <summary>
+    /// 돈이 플레이어의 위치를 향해 움직이게 하는 코루틴
+    /// </summary>
+    /// <param name="itemDuration">아이템 지속 시간</param>
+    /// <returns></returns>
+    IEnumerator MagnetCoroutine(float itemDuration)
+    {
+        float timeElapsed = 0;
+
+        // 플레이어의 트랜스폼
+        Transform targetObject = player.transform;
+
+        while (timeElapsed < itemDuration)
+        {
+            // 현재 돈이 어디에 있던 플레이어를 쫒아오는게 문제인데..
+
+            // 타겟 방향 계산
+            Vector3 direction = (targetObject.position - transform.position).normalized;
+
+            // 타겟 방향으로 이동
+            transform.position = Vector3.MoveTowards(transform.position, targetObject.position, 2 * gameManager.currentGroundMoveSpeed * Time.deltaTime);
+
+            // 경과 시간 업데이트
+            timeElapsed += Time.deltaTime;
+
+            // 다음 프레임까지 대기
+            yield return null;
+        }
+
+        // 지속 시간이 끝난 후의 처리
+        Debug.Log("아이템 효과 종료");
+        Debug.LogWarning("MagnetCoroutine 코루틴 끝");
     }
 }

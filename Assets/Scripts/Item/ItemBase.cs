@@ -67,6 +67,18 @@ public class ItemBase : MonoBehaviour
         StartCoroutine(MoveLeftItemCoroutine());
     }
 
+    void Update()
+    {
+        // 왼쪽 방향으로 레이캐스트 쏴서 DeadZoneLayer와의 충돌을 감지
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.left, 1.0f, 1 << LayerMask.NameToLayer("DeadZoneLayer"));
+
+        if (hit.collider != null)
+        {
+            Debug.Log("DeadZoneLayer와 충돌 감지");
+            Destroy(this.gameObject);  // 아이템 제거
+        }
+    }
+
     /// <summary>
     /// 충돌했을 때
     /// </summary>
@@ -81,12 +93,14 @@ public class ItemBase : MonoBehaviour
             spriteRenderer.color = zeroAlphaColor;      // 안보이게 알파값 0으로 변경
         }
 
+        /* 플레이어와 충돌하면 콜라이더를 비활성화 시켜서 안됨
         // 데드존과 충돌했을 때
         if (collision.gameObject.CompareTag("DeadZone"))
         {
             Debug.Log("아이템이 데드존과 충돌");
             //Destroy(this.gameObject);
         }
+        */
     }
 
     /// <summary>

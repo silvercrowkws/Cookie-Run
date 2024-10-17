@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,6 +52,10 @@ public class MoneySpawner : MonoBehaviour
     Money_Silver_Heart = y값이 0 ~ 3 사이
     */
 
+    /// <summary>
+    /// 돈이 생성되었음을 알리는 델리게이트
+    /// </summary>
+    public Action onMoneyCreat;
 
     private void Awake()
     {
@@ -67,7 +72,9 @@ public class MoneySpawner : MonoBehaviour
     /// </summary>
     public void SpawnMoney()
     {
-        int randomMoneyShape = Random.Range(0, 6);
+        onMoneyCreat?.Invoke();
+
+        int randomMoneyShape = UnityEngine.Random.Range(0, 6);
 
         // 스폰 위치의 Y 값을 랜덤으로 결정하는 변수
         int randomY = 0;
@@ -81,32 +88,32 @@ public class MoneySpawner : MonoBehaviour
         switch (randomMoneyShape)
         {
             case 0:
-                randomY = Random.Range(goldPlusMin, goldPlusMax);
+                randomY = UnityEngine.Random.Range(goldPlusMin, goldPlusMax);
                 spawnPosition = new Vector2(transform.position.x, randomY);
                 money = Instantiate(Money_Gold_Plus, spawnPosition, Quaternion.identity, transform);
                 break;
             case 1:
-                randomY = Random.Range(goldStairsMin, goldStairsMax);
+                randomY = UnityEngine.Random.Range(goldStairsMin, goldStairsMax);
                 spawnPosition = new Vector2(transform.position.x, randomY);
                 money = Instantiate(Money_Gold_Stairs, spawnPosition, Quaternion.identity, transform);
                 break;
             case 2:
-                randomY = Random.Range(silverLineMin, silverLineMax);
+                randomY = UnityEngine.Random.Range(silverLineMin, silverLineMax);
                 spawnPosition = new Vector2(transform.position.x, randomY);
                 money = Instantiate(Money_Silver_Line, spawnPosition, Quaternion.identity, transform);
                 break;
             case 3:
-                randomY = Random.Range(silverArrowMin, silverArrowMax);
+                randomY = UnityEngine.Random.Range(silverArrowMin, silverArrowMax);
                 spawnPosition = new Vector2(transform.position.x, randomY);
                 money = Instantiate(Money_Silver_Arrow, spawnPosition, Quaternion.identity, transform);
                 break;
             case 4:
-                randomY = Random.Range(goldLineMin, goldLineMax);
+                randomY = UnityEngine.Random.Range(goldLineMin, goldLineMax);
                 spawnPosition = new Vector2(transform.position.x, randomY);
                 money = Instantiate(Money_Gold_Line, spawnPosition, Quaternion.identity, transform);
                 break;
             case 5:
-                randomY = Random.Range(silverSmileMin, silverSmileMax);
+                randomY = UnityEngine.Random.Range(silverSmileMin, silverSmileMax);
                 spawnPosition = new Vector2(transform.position.x, randomY);
                 money = Instantiate(Money_Silver_Heart, spawnPosition, Quaternion.identity, transform);
                 break;

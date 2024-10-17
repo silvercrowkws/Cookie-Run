@@ -104,14 +104,9 @@ public class Player : MonoBehaviour
     Vector3 defaultScale = new Vector3(1, 1, 1);
 
     /// <summary>
-    /// 커지는데 걸리는 시간
+    /// 아이템 발동에 걸리는 시간
     /// </summary>
     float hugeelTime = 1.0f;
-
-    /// <summary>
-    /// 러쉬 하는데 걸리는 시간
-    /// </summary>
-    float rushelTime = 1.0f;
 
     /// <summary>
     /// 알파값이 0인 컬러
@@ -133,7 +128,15 @@ public class Player : MonoBehaviour
     /// </summary>
     bool itemAble = true;
 
+    /// <summary>
+    /// 마그넷 아이템이 사용되었음을 알리는 델리게이트
+    /// </summary>
+    public Action<float> onMagnet;
 
+    /// <summary>
+    /// 돈 스포너
+    /// </summary>
+    MoneySpawner moneySpawner;
 
     private void Awake()
     {
@@ -167,6 +170,9 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        moneySpawner = FindAnyObjectByType<MoneySpawner>();
+        moneySpawner.onMoneyCreat += Magnet;
+
         zeroAlphaColor = playerSpriteRenderer.color;
         zeroAlphaColor.a = 0;
 
@@ -378,6 +384,10 @@ public class Player : MonoBehaviour
                     //Debug.Log("itemRush 찾음");
                     Rush();
                 }
+                else if(itemBase is Item_Magnet itemMagnet)
+                {
+                    Magnet();
+                }
             }
             else
             {
@@ -551,7 +561,7 @@ public class Player : MonoBehaviour
     {
         if (itemAble)
         {
-            StartCoroutine(RushCoroutine(rushelTime));
+            StartCoroutine(RushCoroutine());
         }
         else
         {
@@ -562,9 +572,8 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 플레이어를 러쉬 시키는 코루틴
     /// </summary>
-    /// <param name="rushelTime">러쉬 시키는데 걸리는 시간</param>
     /// <returns></returns>
-    IEnumerator RushCoroutine(float rushelTime)
+    IEnumerator RushCoroutine()
     {
         itemAble = false;
         Debug.Log("RushCoroutine 코루틴 시작");
@@ -602,5 +611,16 @@ public class Player : MonoBehaviour
         // Obstacle과 충돌 해제
         IgnoreObstacleCollision(false);
         itemAble = true;
+    }
+
+    /// <summary>
+    /// 각각 돈이 가지고 있는 GetMoney 클래스에 델리게이트를 보내는 함수
+    /// </summary>
+    private void Magnet()
+    {
+        // 델리게이트를 보내는데 나중에 생성된 돈들은 플레이어를 쫒아오지 않음
+        onMagnet?.Invoke(itemBase.itemDuration);
+
+        Debug.Log("돈 스포너와 연결되서 onMagnet 델리게이트 뿌림");
     }
 }
