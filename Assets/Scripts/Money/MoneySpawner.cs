@@ -52,11 +52,6 @@ public class MoneySpawner : MonoBehaviour
     Money_Silver_Heart = y값이 0 ~ 3 사이
     */
 
-    /// <summary>
-    /// 돈이 생성되었음을 알리는 델리게이트
-    /// </summary>
-    public Action onMoneyCreat;
-
     private void Awake()
     {
         gameManager = GameManager.Instance;
@@ -72,8 +67,6 @@ public class MoneySpawner : MonoBehaviour
     /// </summary>
     public void SpawnMoney()
     {
-        onMoneyCreat?.Invoke();
-
         int randomMoneyShape = UnityEngine.Random.Range(0, 6);
 
         // 스폰 위치의 Y 값을 랜덤으로 결정하는 변수

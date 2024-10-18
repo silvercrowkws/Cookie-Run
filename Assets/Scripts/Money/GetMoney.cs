@@ -21,6 +21,11 @@ public class GetMoney : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     /// <summary>
+    /// 박스 콜라이더 2D
+    /// </summary>
+    BoxCollider2D boxCollider;
+
+    /// <summary>
     /// 플레이어
     /// </summary>
     Player player;
@@ -31,17 +36,24 @@ public class GetMoney : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
+        boxCollider = GetComponent<BoxCollider2D>();
     }
 
     private void OnEnable()
     {
         player = GameManager.Instance.Player;
-        player.onMagnet += OnMagnet;        // 활성화될 때마다 이벤트 구독
-    }
+        boxCollider.enabled = true;
 
-    private void OnDisable()
-    {
-        player.onMagnet -= OnMagnet;        // 비활성화될 때 이벤트 해제
+        if (player != null )
+        {
+            player.onMagnet += OnMagnet;
+
+            // 플레이어가 자석 아이템을 먹었으면
+            if (player.isMagnet)
+            {
+                StartCoroutine(MagnetCoroutine());
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -52,6 +64,7 @@ public class GetMoney : MonoBehaviour
             if (this.gameObject.CompareTag("Gold"))
             {
                 gameManager.Money += 5;
+                boxCollider.enabled = false;
 
                 // 소리 재생
                 audioSource.Play();
@@ -59,6 +72,7 @@ public class GetMoney : MonoBehaviour
             else if(this.gameObject.CompareTag("Silver"))
             {
                 gameManager.Money += 1;
+                boxCollider.enabled = false;
 
                 // 소리 재생
                 audioSource.Play();
@@ -90,13 +104,11 @@ public class GetMoney : MonoBehaviour
     }
 
     /// <summary>
-    /// 마그넷 코루틴을 실행시키는 함수
+    /// 이미 생성되어 있는 돈은 따로 델리게이트로 추적 활성화 시킴
     /// </summary>
-    /// <param name="itemDuration">플레이어가 Item_Magnet에서 받아온 아이템 지속 시간</param>
-    private void OnMagnet(float itemDuration)
+    private void OnMagnet()
     {
-        //Debug.Log("플레이어 델리게이트 받아서 함수 실행");
-        StartCoroutine(MagnetCoroutine(itemDuration));
+        StartCoroutine(MagnetCoroutine());
     }
 
     /// <summary>
@@ -104,14 +116,14 @@ public class GetMoney : MonoBehaviour
     /// </summary>
     /// <param name="itemDuration">아이템 지속 시간</param>
     /// <returns></returns>
-    IEnumerator MagnetCoroutine(float itemDuration)
+    IEnumerator MagnetCoroutine()
     {
-        float timeElapsed = 0;
+        //float timeElapsed = 0;
 
         // 플레이어의 트랜스폼
         Transform targetObject = player.transform;
 
-        while (timeElapsed < itemDuration)
+        while (boxCollider.enabled)
         {
             // 현재 돈이 어디에 있던 플레이어를 쫒아오는게 문제인데..
 
@@ -122,14 +134,14 @@ public class GetMoney : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, targetObject.position, 2 * gameManager.currentGroundMoveSpeed * Time.deltaTime);
 
             // 경과 시간 업데이트
-            timeElapsed += Time.deltaTime;
+            //timeElapsed += Time.deltaTime;
 
             // 다음 프레임까지 대기
             yield return null;
         }
 
         // 지속 시간이 끝난 후의 처리
-        Debug.Log("아이템 효과 종료");
-        Debug.LogWarning("MagnetCoroutine 코루틴 끝");
+        //Debug.Log("아이템 효과 종료");
+        //Debug.LogWarning("MagnetCoroutine 코루틴 끝");
     }
 }

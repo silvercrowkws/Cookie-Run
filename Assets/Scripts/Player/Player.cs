@@ -128,16 +128,6 @@ public class Player : MonoBehaviour
     /// </summary>
     bool itemAble = true;
 
-    /// <summary>
-    /// 마그넷 아이템이 사용되었음을 알리는 델리게이트
-    /// </summary>
-    public Action<float> onMagnet;
-
-    /// <summary>
-    /// 돈 스포너
-    /// </summary>
-    MoneySpawner moneySpawner;
-
     private void Awake()
     {
         inputActions = new PlayerInputActions();
@@ -170,9 +160,6 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        moneySpawner = FindAnyObjectByType<MoneySpawner>();
-        moneySpawner.onMoneyCreat += Magnet;
-
         zeroAlphaColor = playerSpriteRenderer.color;
         zeroAlphaColor.a = 0;
 
@@ -428,11 +415,6 @@ public class Player : MonoBehaviour
         doublejumpAble = true;
     }
 
-    IEnumerator delayCoroutine()
-    {
-        yield return new WaitForSeconds(0.35f);
-    }
-
     /// <summary>
     /// 콜라이더의 오프셋과 사이즈를 변경하는 함수
     /// </summary>
@@ -459,6 +441,7 @@ public class Player : MonoBehaviour
     }
 
     // 아이템 관련 --------------------------------------------------------------------------------
+
     /// <summary>
     /// 거대화 코루틴을 실행시키는 함수
     /// </summary>
@@ -606,7 +589,7 @@ public class Player : MonoBehaviour
 
         animator.SetBool("Booster", false);     // 부스터 비활성화
         animator.SetBool("Sliding", false);     // 슬라이딩 비활성화
-        animator.SetBool("Run", true);         // 달리기 비활성화
+        animator.SetBool("Run", true);          // 달리기 비활성화
 
         // Obstacle과 충돌 해제
         IgnoreObstacleCollision(false);
@@ -614,13 +597,31 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 각각 돈이 가지고 있는 GetMoney 클래스에 델리게이트를 보내는 함수
+    /// 자석 아이템을 먹었는지 확인하는 bool 변수
+    /// </summary>
+    public bool isMagnet = false;
+
+    public Action onMagnet;
+
+    /// <summary>
+    /// 자석 아이템을 먹었을 때 실행되는 함수
     /// </summary>
     private void Magnet()
     {
-        // 델리게이트를 보내는데 나중에 생성된 돈들은 플레이어를 쫒아오지 않음
-        onMagnet?.Invoke(itemBase.itemDuration);
+        StartCoroutine(MagnetCoroutine());
+        onMagnet?.Invoke();
+    }
 
-        Debug.Log("돈 스포너와 연결되서 onMagnet 델리게이트 뿌림");
+    /// <summary>
+    /// 일정시간 동안 isMagnet 변수를 true로 바꾸는 코루틴
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator MagnetCoroutine()
+    {
+        isMagnet = true;
+
+        yield return new WaitForSeconds(itemBase.itemDuration);
+
+        isMagnet = false;
     }
 }
