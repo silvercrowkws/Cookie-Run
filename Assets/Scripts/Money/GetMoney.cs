@@ -48,16 +48,25 @@ public class GetMoney : MonoBehaviour
         {
             player.onMagnet += OnMagnet;
 
+            /*// 플레이어가 자석 아이템을 먹었으면
+            if (player.isMagnet)
+            {
+                StartCoroutine(MagnetCoroutine());
+            }*/
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("MagnetZone"))
+        {
             // 플레이어가 자석 아이템을 먹었으면
             if (player.isMagnet)
             {
                 StartCoroutine(MagnetCoroutine());
             }
         }
-    }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
         // 플레이어와 충돌했으면
         if (collision.CompareTag("Player"))
         {

@@ -564,6 +564,8 @@ public class Player : MonoBehaviour
         // Obstacle과 충돌 무시
         IgnoreObstacleCollision(true);
 
+        ResetTrigger();
+
         animator.SetBool("Run", false);         // 달리기 비활성화
         animator.SetBool("Sliding", false);     // 슬라이딩 비활성화
         animator.SetBool("Booster", true);      // 부스터 활성화
@@ -623,5 +625,12 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(itemBase.itemDuration);
 
         isMagnet = false;
+    }
+
+    public void ResetTrigger()
+    {
+        animator.ResetTrigger("Run");
+        animator.ResetTrigger("Booster");
+        animator.ResetTrigger("Sliding");
     }
 }

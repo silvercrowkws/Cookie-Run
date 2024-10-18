@@ -13,6 +13,7 @@ TagManager:
   - Silver
   - Item
   - Obstacle_Ground
+  - MagnetZone
   layers:
   - Default
   - TransparentFX

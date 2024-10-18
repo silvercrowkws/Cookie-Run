@@ -12,6 +12,6 @@ public class Item_Magnet : ItemBase
     protected override void Start()
     {
         base.Start();
-        itemDuration = 15.0f;
+        itemDuration = 30.0f;
     }
 }
