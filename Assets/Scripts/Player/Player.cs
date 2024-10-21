@@ -80,6 +80,38 @@ public class Player : MonoBehaviour
     float defaultGravity = 0.75f;
     float changeGravity = 3.0f;
 
+    /// <summary>
+    /// 플레이어의 남은 체력
+    /// </summary>
+    float currentHP = 100;
+
+    /// <summary>
+    /// 플레이어의 체력 프로퍼티
+    /// </summary>
+    public float HP
+    {
+        get => currentHP;
+        set
+        {
+            if (currentHP != value)     // 현재 체력이 변경되면
+            {
+                currentHP = Mathf.Clamp(value, 0, 100);     // 체력 클램프 0 ~ 100
+                //Debug.Log($"남은 체력 : {currentHP}");
+                onHPChange?.Invoke(currentHP);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 체력이 변경되었음을 알리는 델리게이트
+    /// </summary>
+    public Action<float> onHPChange;
+
+    /// <summary>
+    /// HP 감소 간격
+    /// </summary>
+    float hpMinusInterval = 1.0f;
+
 
     // 아이템 관련 --------------------------------------------------------------------------------
 
@@ -167,6 +199,8 @@ public class Player : MonoBehaviour
         oneAlphaColor.a = 1;
 
         playerSpriteRenderer.color = oneAlphaColor;           // 생성될 때는 알파값 1로 설정
+
+        StartCoroutine(HPChangeCoroutine());
     }
 
     /// <summary>
@@ -375,6 +409,10 @@ public class Player : MonoBehaviour
                 {
                     Magnet();
                 }
+                else if(itemBase is Item_HealPotion itemHealPotion)
+                {
+                    HealPotion();
+                }
             }
             else
             {
@@ -440,6 +478,22 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 플레이어의 체력을 감소시키는 코루틴
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator HPChangeCoroutine()
+    {
+        while (HP > 0)
+        {
+            // 초당 1씩 감소하도록, 매 프레임마다 감소량을 계산
+            HP -= hpMinusInterval * Time.deltaTime;
+            yield return null;
+            //yield return new WaitForSeconds(1);
+        }
+    }
+
+
     // 아이템 관련 --------------------------------------------------------------------------------
 
     /// <summary>
@@ -464,6 +518,9 @@ public class Player : MonoBehaviour
     /// <returns></returns>
     IEnumerator HugeCoroutine(float hugeelTime)
     {
+        Debug.Log($"거대화 아이템의 지속시간 : {itemBase.itemDuration}");
+        Debug.Log("거대화는 10초가 정상");
+
         itemAble = false;
         Debug.Log("HugeCoroutine 코루틴 시작");
 
@@ -558,6 +615,9 @@ public class Player : MonoBehaviour
     /// <returns></returns>
     IEnumerator RushCoroutine()
     {
+        Debug.Log($"러쉬 아이템의 지속시간 : {itemBase.itemDuration}");
+        Debug.Log("러쉬는 15초가 정상");
+
         itemAble = false;
         Debug.Log("RushCoroutine 코루틴 시작");
 
@@ -620,6 +680,9 @@ public class Player : MonoBehaviour
     /// <returns></returns>
     IEnumerator MagnetCoroutine()
     {
+        Debug.Log($"마그넷 아이템의 지속시간 : {itemBase.itemDuration}");
+        Debug.Log("마그넷은 30초가 정상");
+
         isMagnet = true;
 
         yield return new WaitForSeconds(itemBase.itemDuration);
@@ -627,6 +690,19 @@ public class Player : MonoBehaviour
         isMagnet = false;
     }
 
+    /// <summary>
+    /// HP 회복 포션으로 HP가 회복되는 함수
+    /// </summary>
+    private void HealPotion()
+    {
+        HP += itemBase.itemDuration;
+        Debug.Log($"힐포션 아이템의 회복량 : {itemBase.itemDuration}");
+        Debug.Log("힐포션은 30이 정상");
+    }
+
+    /// <summary>
+    /// 트리거 초기화 함수
+    /// </summary>
     public void ResetTrigger()
     {
         animator.ResetTrigger("Run");
