@@ -160,6 +160,11 @@ public class Player : MonoBehaviour
     /// </summary>
     bool itemAble = true;
 
+    /// <summary>
+    /// 자석 아이템 효과 중이라고 알릴 게임 오브젝트
+    /// </summary>
+    GameObject magnetSprite;
+
     private void Awake()
     {
         inputActions = new PlayerInputActions();
@@ -167,6 +172,8 @@ public class Player : MonoBehaviour
         playerRigid = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<BoxCollider2D>();
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        magnetSprite = transform.GetChild(0).gameObject;
+        magnetSprite.gameObject.SetActive(false);
 
         animator = GetComponent<Animator>();
         animator.SetBool("Run", true);      // 초기 세팅은 Run true 상태
@@ -684,10 +691,12 @@ public class Player : MonoBehaviour
         Debug.Log("마그넷은 30초가 정상");
 
         isMagnet = true;
+        magnetSprite.gameObject.SetActive(true);
 
         yield return new WaitForSeconds(itemBase.itemDuration);
 
         isMagnet = false;
+        magnetSprite.gameObject.SetActive(false);
     }
 
     /// <summary>
