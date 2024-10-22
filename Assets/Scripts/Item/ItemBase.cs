@@ -110,9 +110,20 @@ public class ItemBase : MonoBehaviour
     IEnumerator MoveLeftItemCoroutine()
     {
         // 무한 루프
+        float amplitude = 2.0f; // 최대 높이
+        float frequency = 2.0f; // 주기
+        Vector3 startPosition = transform.position;
+
+        // 무한 루프
         while (true)
         {
             transform.position += Vector3.left * itemMoveSpeed * Time.deltaTime;
+
+            // 싸인 함수로 y축 위치 계산
+            float y = Mathf.Sin(Time.time * frequency) * amplitude;
+
+            // 새로운 y 위치 적용 (x축은 왼쪽으로 이동, y축은 싸인 함수에 따라 움직임)
+            transform.position = new Vector3(transform.position.x, startPosition.y + y, transform.position.z);
 
             // 다음 프레임까지 대기
             yield return null;

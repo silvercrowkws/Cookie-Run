@@ -32,7 +32,7 @@ public class MoneySpawner : MonoBehaviour
     int goldLineMax = 5;
 
     // Money_Silver_Line 의 최대최소 위치
-    int silverLineMin = -3;
+    int silverLineMin = -2;
     int silverLineMax = 5;
 
     // Money_Silver_Arrow 의 최대최소 위치

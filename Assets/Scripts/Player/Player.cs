@@ -165,6 +165,16 @@ public class Player : MonoBehaviour
     /// </summary>
     GameObject magnetSprite;
 
+    /// <summary>
+    /// 자석 아이템을 먹었는지 확인하는 bool 변수
+    /// </summary>
+    public bool isMagnet = false;
+
+    /// <summary>
+    /// 자석 아이템을 먹었다고 알리는 델리게이트
+    /// </summary>
+    public Action onMagnet;
+
     private void Awake()
     {
         inputActions = new PlayerInputActions();
@@ -384,9 +394,7 @@ public class Player : MonoBehaviour
             onGetBool();                                    // 바닥에서 떨어지기 전에 무슨 상태였는지 확인
 
             slidingAble = false;                            // 바닥에서 떨어졌을 때는 슬라이딩 안되게
-
-
-            // 슬라이딩 중 땅에서 떨어져서 런과 부스터가 안이어지는 버그 있음
+            
             // 점프 중에 바닥에 닿기 전까지는 꺼짐
             animator.SetBool("Run", false);
             animator.SetBool("Booster", false);
@@ -637,6 +645,8 @@ public class Player : MonoBehaviour
         animator.SetBool("Sliding", false);     // 슬라이딩 비활성화
         animator.SetBool("Booster", true);      // 부스터 활성화
 
+        onGetBool();                            // 변경된 상태 기록
+
         //yield return new WaitForSeconds(itemBase.itemDuration);
         yield return new WaitForSeconds(itemBase.itemDuration - blinkTime);     // itemDuration - blinkTime 초에 깜빡임 시작 => 7초 후
 
@@ -660,17 +670,12 @@ public class Player : MonoBehaviour
         animator.SetBool("Sliding", false);     // 슬라이딩 비활성화
         animator.SetBool("Run", true);          // 달리기 비활성화
 
+        onGetBool();                            // 변경된 상태 기록
+
         // Obstacle과 충돌 해제
         IgnoreObstacleCollision(false);
         itemAble = true;
     }
-
-    /// <summary>
-    /// 자석 아이템을 먹었는지 확인하는 bool 변수
-    /// </summary>
-    public bool isMagnet = false;
-
-    public Action onMagnet;
 
     /// <summary>
     /// 자석 아이템을 먹었을 때 실행되는 함수
