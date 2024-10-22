@@ -43,7 +43,17 @@ public class ItemBase : MonoBehaviour
     /// <summary>
     /// 플레이어
     /// </summary>
-    //protected Player player;
+    protected Player player;
+
+    /// <summary>
+    /// 싸인 함수 최대 높이
+    /// </summary>
+    float amplitude = 2.0f;
+
+    /// <summary>
+    /// 싸인 함수 주기(사이클 도는 시간)
+    /// </summary>
+    float frequency = 2.0f;
 
     protected virtual void Awake()
     {
@@ -63,8 +73,18 @@ public class ItemBase : MonoBehaviour
 
     protected virtual void Start()
     {
-        //player = GameManager.Instance.Player;
+        player = GameManager.Instance.Player;
+        player.onPlayerDie += SpeedZero2;
         StartCoroutine(MoveLeftItemCoroutine());
+    }
+
+    /// <summary>
+    /// 플레이어의 사망으로 속도를 0으로 만드는 함수
+    /// </summary>
+    private void SpeedZero2()
+    {
+        itemMoveSpeed = 0;
+        amplitude = 0;
     }
 
     void Update()
@@ -109,9 +129,6 @@ public class ItemBase : MonoBehaviour
     /// <returns></returns>
     IEnumerator MoveLeftItemCoroutine()
     {
-        // 무한 루프
-        float amplitude = 2.0f; // 최대 높이
-        float frequency = 2.0f; // 주기
         Vector3 startPosition = transform.position;
 
         // 무한 루프

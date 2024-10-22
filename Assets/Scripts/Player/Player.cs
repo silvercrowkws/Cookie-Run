@@ -98,9 +98,23 @@ public class Player : MonoBehaviour
                 currentHP = Mathf.Clamp(value, 0, 100);     // 체력 클램프 0 ~ 100
                 //Debug.Log($"남은 체력 : {currentHP}");
                 onHPChange?.Invoke(currentHP);
+
+                if(currentHP == 0)
+                {
+                    Debug.Log("플레이어 사망");
+                    ResetTrigger();
+                    animator.SetBool("HeartDie", true);
+                    onPlayerDie?.Invoke();
+                    OnDisable();
+                }
             }
         }
     }
+
+    /// <summary>
+    /// 플레이어의 사망을 알리는 델리게이트
+    /// </summary>
+    public Action onPlayerDie;
 
     /// <summary>
     /// 체력이 변경되었음을 알리는 델리게이트

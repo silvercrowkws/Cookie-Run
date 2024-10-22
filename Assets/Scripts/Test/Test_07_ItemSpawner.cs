@@ -21,4 +21,12 @@ public class Test_07_ItemSpawner : TestBase
     {
         Instantiate(itemRushPrefabs, itemSpawner.transform.position, Quaternion.identity);
     }
+
+    protected override void OnTest2(InputAction.CallbackContext context)
+    {
+        Player player;
+        player = GameManager.Instance.Player;
+
+        player.HP -= 30;
+    }
 }

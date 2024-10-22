@@ -66,6 +66,16 @@ public class GameManager : Singleton<GameManager>
 
         // 초기 속도 설정
         currentGroundMoveSpeed = baseGroundMoveSpeed;
+
+        player.onPlayerDie += SpeedZero;
+    }
+
+    /// <summary>
+    /// 플레이어의 사망으로 속도를 0으로 만드는 함수
+    /// </summary>
+    private void SpeedZero()
+    {
+        currentGroundMoveSpeed = 0;
     }
 
     /// <summary>

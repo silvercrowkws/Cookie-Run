@@ -36,16 +36,16 @@ public class ItemSpawner : MonoBehaviour
             switch (spawnItemNumber)
             {
                 case 0:
-                    Instantiate(item_Huge_Prefabs, transform.position, Quaternion.identity);
+                    Instantiate(item_Huge_Prefabs, transform.position, Quaternion.identity, transform);
                     break;
                 case 1:
-                    Instantiate(item_Rush_Prefabs, transform.position, Quaternion.identity);
+                    Instantiate(item_Rush_Prefabs, transform.position, Quaternion.identity, transform);
                     break;
                 case 2:
-                    Instantiate(item_Magnet_Prefabs, transform.position, Quaternion.identity);
+                    Instantiate(item_Magnet_Prefabs, transform.position, Quaternion.identity, transform);
                     break;
                 case 3:
-                    Instantiate(item_HealPotion_Prefabs, transform.position, Quaternion.identity);
+                    Instantiate(item_HealPotion_Prefabs, transform.position, Quaternion.identity, transform);
                     break;
             }
             yield return new WaitForSeconds(spawninterval);
