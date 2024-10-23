@@ -101,14 +101,34 @@ public class Player : MonoBehaviour
 
                 if(currentHP == 0)
                 {
-                    Debug.Log("플레이어 사망");
-                    ResetTrigger();
-                    animator.SetBool("HeartDie", true);
-                    onPlayerDie?.Invoke();
-                    OnDisable();
+                    PlayerDieFC();
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// 플레이어가 죽었을 때 해야 할 일들
+    /// </summary>
+    private void PlayerDieFC()
+    {
+        Debug.Log("플레이어 사망");
+        gameOver = true;                            // 게임 오버
+        ResetTrigger();                             // 트리거 초기화
+        playerRigid.velocity = Vector2.zero;        // 속도 0
+        playerRigid.angularVelocity = 0f;           // 각속도 0
+
+        // 플레이어의 hp가 0으로 죽으면
+        if(HP <= 0)
+        {
+            animator.SetBool("HeartDie", true);     // 애니메이터 수정
+        }
+        else
+        {
+            animator.SetBool("Die", true) ;         // 애니메이터 수정
+        }
+        onPlayerDie?.Invoke();                      // 델리게이트 보냄
+        OnDisable();                                // 연결 끊기
     }
 
     /// <summary>
@@ -390,12 +410,24 @@ public class Player : MonoBehaviour
         // 플레이어 데드 존과 충돌
         else if (collision.gameObject.CompareTag("PlayerDeadZone"))
         {
-            Debug.Log("플레이어 사망");
-            gameOver = true;
-            ResetTrigger();
-            animator.SetBool("HeartDie", true);
-            onPlayerDie?.Invoke();
-            OnDisable();
+            PlayerDieFC();
+        }
+
+        // 장애물과 충돌
+        else if (collision.gameObject.CompareTag("Obstacle_Ground"))
+        {
+            Debug.Log("Obstacle_Ground와 충돌 감지");
+
+            // 충돌한 오브젝트의 자식 중 ObstacleLayer를 가진 오브젝트가 있는지 확인
+            foreach (Transform child in collision.transform)
+            {
+                if (child.gameObject.layer == LayerMask.NameToLayer("ObstacleLayer"))
+                {
+                    Debug.LogWarning("장애물과 충돌");
+
+                    PlayerDieFC();
+                }
+            }
         }
     }
 
@@ -750,8 +782,15 @@ public class Player : MonoBehaviour
     /// </summary>
     public void ResetTrigger()
     {
+        animator.SetBool("Run", false);
         animator.ResetTrigger("Run");
+
         animator.ResetTrigger("Booster");
+        animator.SetBool("Booster", false);
+
         animator.ResetTrigger("Sliding");
+        animator.SetBool("Sliding", false);
+
+        onGetBool();                            // 변경된 상태 기록
     }
 }
