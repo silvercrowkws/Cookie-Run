@@ -29,7 +29,8 @@ public class ItemSpawner : MonoBehaviour
 
     IEnumerator ItemSpawnCoroutine(float spawninterval)
     {
-        while(player.HP > 0)        // 플레이어가 살아있는 동안 반복
+        // 플레이어의 HP가 0보다 크고, 게임이 진행중이면
+        while (player.HP > 0 && !player.gameOver)
         {
             int spawnItemNumber = UnityEngine.Random.Range(0, 4);       // 0,1,2,3 뽑기
 

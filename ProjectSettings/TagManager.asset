@@ -14,6 +14,7 @@ TagManager:
   - Item
   - Obstacle_Ground
   - MagnetZone
+  - PlayerDeadZone
   layers:
   - Default
   - TransparentFX

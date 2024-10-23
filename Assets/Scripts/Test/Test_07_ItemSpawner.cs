@@ -29,4 +29,11 @@ public class Test_07_ItemSpawner : TestBase
 
         player.HP -= 30;
     }
+
+    /*protected override void OnTest3(InputAction.CallbackContext context)
+    {
+        Player player;
+        player = GameManager.Instance.Player;
+    }*/
+
 }

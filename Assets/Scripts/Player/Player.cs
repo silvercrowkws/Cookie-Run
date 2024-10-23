@@ -126,6 +126,11 @@ public class Player : MonoBehaviour
     /// </summary>
     float hpMinusInterval = 1.0f;
 
+    /// <summary>
+    /// 플레이어가 죽어서 게임이 끝났는지 확인하는 bool 변수(true : 게임 오버, false : 게임 진행 중)
+    /// </summary>
+    public bool gameOver = false;
+
 
     // 아이템 관련 --------------------------------------------------------------------------------
 
@@ -346,6 +351,7 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // 그라운드와 충돌
         if (collision.gameObject.CompareTag("Ground"))
         {
             Debug.Log("땅과 충돌");
@@ -379,8 +385,17 @@ public class Player : MonoBehaviour
                 animator.ResetTrigger("Jump");      // Jump 애니메이션 트리거를 초기화
                 animator.ResetTrigger("DoubleJump"); // DoubleJump 애니메이션 트리거를 초기화
             }
+        }
 
-
+        // 플레이어 데드 존과 충돌
+        else if (collision.gameObject.CompareTag("PlayerDeadZone"))
+        {
+            Debug.Log("플레이어 사망");
+            gameOver = true;
+            ResetTrigger();
+            animator.SetBool("HeartDie", true);
+            onPlayerDie?.Invoke();
+            OnDisable();
         }
     }
 
@@ -513,13 +528,15 @@ public class Player : MonoBehaviour
     /// <returns></returns>
     IEnumerator HPChangeCoroutine()
     {
-        while (HP > 0)
+        // 플레이어의 HP가 0보다 크고, 게임이 진행중이면
+        while (HP > 0 && !gameOver)
         {
             // 초당 1씩 감소하도록, 매 프레임마다 감소량을 계산
             HP -= hpMinusInterval * Time.deltaTime;
             yield return null;
             //yield return new WaitForSeconds(1);
         }
+        Debug.Log("플레이어 체력 감소 코루틴 끝");
     }
 
 
