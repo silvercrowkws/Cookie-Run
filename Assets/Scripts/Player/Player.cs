@@ -729,11 +729,23 @@ public class Player : MonoBehaviour
             //yield return null;
         }
 
-        animator.SetBool("Booster", false);     // 부스터 비활성화
-        animator.SetBool("Sliding", false);     // 슬라이딩 비활성화
-        animator.SetBool("Run", true);          // 달리기 비활성화
+        // 시간이 끝났는데 슬라이딩 중이면
+        if (animator.GetBool("Sliding"))
+        {
+            animator.SetBool("Booster", false);     // 부스터 비활성화
+            animator.SetBool("Sliding", true);      // 슬라이딩 활성화
+            onGetBool();                            // 변경된 상태 기록 => 슬라이딩 중이었기 때문에 isRun = false 상태
+            isRun = true;                           // 슬라이딩 끝났을 때 런 상태로 돌아가기 위해
+        }
+        else
+        {
+            animator.SetBool("Booster", false);     // 부스터 비활성화
+            animator.SetBool("Sliding", false);     // 슬라이딩 비활성화
+            animator.SetBool("Run", true);          // 달리기 활성화
+            onGetBool();                            // 변경된 상태 기록
+        }
 
-        onGetBool();                            // 변경된 상태 기록
+        //onGetBool();                                // 변경된 상태 기록
 
         // Obstacle과 충돌 해제
         IgnoreObstacleCollision(false);

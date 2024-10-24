@@ -12,6 +12,8 @@ public class Test_07_ItemSpawner : TestBase
 
     public GameObject itemRushPrefabs;
 
+    public GameObject itemMagnetPrefabs;
+
     private void Start()
     {
         itemSpawner = FindAnyObjectByType<ItemSpawner>();
@@ -30,10 +32,9 @@ public class Test_07_ItemSpawner : TestBase
         player.HP -= 30;
     }
 
-    /*protected override void OnTest3(InputAction.CallbackContext context)
+    protected override void OnTest3(InputAction.CallbackContext context)
     {
-        Player player;
-        player = GameManager.Instance.Player;
-    }*/
+        Instantiate(itemMagnetPrefabs, itemSpawner.transform.position, Quaternion.identity);
+    }
 
 }

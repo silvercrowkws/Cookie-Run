@@ -20,6 +20,11 @@ public class Ground_Parent : MonoBehaviour
     public GameObject groundPrefabs;
 
     /// <summary>
+    /// 슬라이딩 장애물 프리팹
+    /// </summary>
+    public GameObject upObstaclePrefabs;
+
+    /// <summary>
     /// 현재 사이클
     /// </summary>
     public int cycle = 0;
@@ -68,10 +73,18 @@ public class Ground_Parent : MonoBehaviour
     {
         gameManager.IncreaseSpeed(0.25f);
 
-        // 땅 생성
-        GameObject ground = Instantiate(groundPrefabs, transform.position, Quaternion.identity, transform);
-        //Ground groundComponent = ground.GetComponent<Ground>();
+        int randomGround = UnityEngine.Random.Range(0, 10);     // 0 ~ 10 사이 숫자 뽑기
 
-        // 여기여 확률적으로 그냥 땅이 생성되는 것이 아니라 슬라이딩 땅이 생성되는 부분 필요할 듯(위에 땅 생성 부분까지 if문으로 묶어서)
+        if(randomGround < 5)        // 0 or 1이니까 20% 확률로
+        {
+            // 슬라이딩 땅 생성
+            GameObject ground = Instantiate(upObstaclePrefabs, transform.position, Quaternion.identity, transform);
+        }
+        else
+        {
+            // 일반 땅 생성
+            GameObject ground = Instantiate(groundPrefabs, transform.position, Quaternion.identity, transform);
+        }
+        //Ground groundComponent = ground.GetComponent<Ground>();
     }
 }

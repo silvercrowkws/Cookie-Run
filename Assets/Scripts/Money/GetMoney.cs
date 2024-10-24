@@ -134,13 +134,14 @@ public class GetMoney : MonoBehaviour
 
         while (boxCollider.enabled)
         {
-            // 현재 돈이 어디에 있던 플레이어를 쫒아오는게 문제인데..
-
-            // 타겟 방향 계산
-            Vector3 direction = (targetObject.position - transform.position).normalized;
+            // 타겟 방향 계산(슬라이딩 시 돈이 바로 안먹어지고 위에 쌓여서 0.5 내림)
+            //Vector3 direction = (targetObject.position - transform.position).normalized;
+            Vector3 targetPosition = new Vector3(targetObject.position.x, targetObject.position.y - 0.5f, targetObject.position.z);
+            Vector3 direction = (targetPosition - transform.position).normalized;
 
             // 타겟 방향으로 이동
-            transform.position = Vector3.MoveTowards(transform.position, targetObject.position, 2 * gameManager.currentGroundMoveSpeed * Time.deltaTime);
+            //transform.position = Vector3.MoveTowards(transform.position, targetObject.position, 2 * gameManager.currentGroundMoveSpeed * Time.deltaTime);
+            transform.position += direction * 2 * gameManager.currentGroundMoveSpeed * Time.deltaTime;
 
             // 경과 시간 업데이트
             //timeElapsed += Time.deltaTime;

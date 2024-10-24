@@ -517,6 +517,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundPrefabs: {fileID: 1192888236270065206, guid: e79f9c38102741a42806b8c07bca91ea, type: 3}
+  upObstaclePrefabs: {fileID: 1403024921761886501, guid: ed4942a0403e0a544a3f1c8463defafc, type: 3}
   cycle: 0
 --- !u!1 &731908321
 GameObject:
@@ -1206,7 +1207,7 @@ Transform:
   m_GameObject: {fileID: 941522617}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2341,6 +2342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   seed: -1
   itemRushPrefabs: {fileID: 231493367606354714, guid: c424c938bf73ead449c49f3f2893671d, type: 3}
+  itemMagnetPrefabs: {fileID: 329167960033466883, guid: c072cb40140ac484aae883a91f6f1a4d, type: 3}
 --- !u!1 &1530048763
 GameObject:
   m_ObjectHideFlags: 0
@@ -3054,6 +3056,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpPower: 7
   doublejumpPower: 5
+  gameOver: 0
   isMagnet: 0
 --- !u!61 &1853852895
 BoxCollider2D:
