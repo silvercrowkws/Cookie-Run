@@ -51,6 +51,34 @@ public class GameManager : Singleton<GameManager>
     public Action<float> onMoneyChange;
 
     /// <summary>
+    /// 현재 가지고 있는 젤리
+    /// </summary>
+    float currentJelly;
+
+    /// <summary>
+    /// 젤리 프로퍼티
+    /// </summary>
+    public float Jelly
+    {
+        get => currentJelly;
+        set
+        {
+            if (currentJelly != value)
+            {
+                //currentJelly = value;
+                currentJelly = Mathf.Clamp(value, 0, 999);
+                Debug.Log($"남은 젤리 : {currentJelly}");
+                onJellyChange?.Invoke(currentJelly);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 젤리가 변경되었음을 알리는 델리게이트(UI 수정용)
+    /// </summary>
+    public Action<float> onJellyChange;
+
+    /// <summary>
     /// 기본 속도
     /// </summary>
     public float baseGroundMoveSpeed = 3.0f;

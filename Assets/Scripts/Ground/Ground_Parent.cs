@@ -73,9 +73,9 @@ public class Ground_Parent : MonoBehaviour
     {
         gameManager.IncreaseSpeed(0.25f);
 
-        int randomGround = UnityEngine.Random.Range(0, 10);     // 0 ~ 10 사이 숫자 뽑기
+        int randomGround = UnityEngine.Random.Range(0, 10);     // 0 ~ 9 사이 숫자 뽑기
 
-        if(randomGround < 5)        // 0 or 1이니까 20% 확률로
+        if(randomGround < 2)        // 0 or 1이니까 20% 확률로
         {
             // 슬라이딩 땅 생성
             GameObject ground = Instantiate(upObstaclePrefabs, transform.position, Quaternion.identity, transform);

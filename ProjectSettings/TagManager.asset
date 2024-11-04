@@ -15,6 +15,11 @@ TagManager:
   - Obstacle_Ground
   - MagnetZone
   - PlayerDeadZone
+  - Jelly_Normal
+  - Jelly_Red
+  - Jelly_BigYellow
+  - Jelly_Star
+  - Jelly_Angel
   layers:
   - Default
   - TransparentFX

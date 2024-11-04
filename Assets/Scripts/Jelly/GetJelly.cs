@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GetMoney : MonoBehaviour
+public class GetJelly : MonoBehaviour
 {
     /// <summary>
     /// 게임 매니저
@@ -44,7 +43,7 @@ public class GetMoney : MonoBehaviour
         player = GameManager.Instance.Player;
         boxCollider.enabled = true;
 
-        if (player != null )
+        if (player != null)
         {
             player.onMagnet += OnMagnet;
 
@@ -70,22 +69,37 @@ public class GetMoney : MonoBehaviour
         // 플레이어와 충돌했으면
         if (collision.CompareTag("Player"))
         {
-            if (this.gameObject.CompareTag("Gold"))
+            if (this.gameObject.CompareTag("Jelly_Normal"))
             {
-                gameManager.Money += 3;
+                gameManager.Jelly += 1;
                 boxCollider.enabled = false;
 
                 // 소리 재생
-                audioSource.Play();
+                // audioSource.Play();
             }
-            else if(this.gameObject.CompareTag("Silver"))
+            else if (this.gameObject.CompareTag("Jelly_Red"))
             {
-                gameManager.Money += 1;
+                gameManager.Jelly += 3;
                 boxCollider.enabled = false;
-
-                // 소리 재생
-                audioSource.Play();
             }
+            else if (this.gameObject.CompareTag("Jelly_BigYellow"))
+            {
+                gameManager.Jelly += 10;
+                boxCollider.enabled = false;
+            }
+            else if (this.gameObject.CompareTag("Jelly_Star"))
+            {
+                gameManager.Jelly += 15;
+                boxCollider.enabled = false;
+            }
+            else if (this.gameObject.CompareTag("Jelly_Angel"))
+            {
+                gameManager.Jelly += 30;
+                boxCollider.enabled = false;
+            }
+
+            // 소리 재생
+            audioSource.Play();
 
             // 알파 값을 0으로 변경하여 사라지게 함
             Color color = spriteRenderer.color;
@@ -113,7 +127,7 @@ public class GetMoney : MonoBehaviour
     }
 
     /// <summary>
-    /// 이미 생성되어 있는 돈은 따로 델리게이트로 추적 활성화 시킴
+    /// 이미 생성되어 있는 젤리는 따로 델리게이트로 추적 활성화 시킴
     /// </summary>
     private void OnMagnet()
     {
@@ -121,7 +135,7 @@ public class GetMoney : MonoBehaviour
     }
 
     /// <summary>
-    /// 돈이 플레이어의 위치를 향해 움직이게 하는 코루틴
+    /// 젤리가 플레이어의 위치를 향해 움직이게 하는 코루틴
     /// </summary>
     /// <param name="itemDuration">아이템 지속 시간</param>
     /// <returns></returns>

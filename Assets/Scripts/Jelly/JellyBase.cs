@@ -1,16 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class MoneyBase : MonoBehaviour
+public class JellyBase : MonoBehaviour
 {
     /// <summary>
     /// 게임 매니저
     /// </summary>
     GameManager gameManager;
 
-    MoneySpawner moneySpawner;
+    JellySpawner jellySpawner;
 
     private void Awake()
     {
@@ -19,7 +18,7 @@ public class MoneyBase : MonoBehaviour
 
     private void Start()
     {
-        moneySpawner = FindAnyObjectByType<MoneySpawner>();
+        jellySpawner = FindAnyObjectByType<JellySpawner>();
         StartCoroutine(MoveLeftCoroutine());
     }
 
@@ -47,10 +46,10 @@ public class MoneyBase : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("DeadZone"))
         {
-            Debug.Log("돈이 데드존과 충돌");
+            Debug.Log("젤리가 데드존과 충돌");
 
-            // 새로운 돈 생성 해야 됨
-            moneySpawner.SpawnMoney();
+            // 새로운 젤리 생성 해야 됨
+            jellySpawner.SpawnJelly();
         }
     }
 
@@ -58,7 +57,7 @@ public class MoneyBase : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("DeadZone"))
         {
-            Debug.Log("돈이 데드존과 충돌 끝");
+            Debug.Log("젤리가 데드존과 충돌 끝");
 
             Destroy(gameObject);
         }
