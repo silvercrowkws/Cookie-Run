@@ -8,7 +8,7 @@ public class ItemBase : MonoBehaviour
     /// <summary>
     /// 아이템의 이동속도
     /// </summary>
-    protected float itemMoveSpeed = 3.0f;
+    public float itemMoveSpeed = 3.0f;
 
     /// <summary>
     /// 아이템의 지속 시간
@@ -48,7 +48,7 @@ public class ItemBase : MonoBehaviour
     /// <summary>
     /// 싸인 함수 최대 높이
     /// </summary>
-    float amplitude = 2.0f;
+    public float amplitude = 2.0f;
 
     /// <summary>
     /// 싸인 함수 주기(사이클 도는 시간)
