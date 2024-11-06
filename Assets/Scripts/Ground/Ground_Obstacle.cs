@@ -30,7 +30,7 @@ public class Ground_Obstacle : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("RiseZone"))
         {
-            StartCoroutine(ObstacleUP());
+            StartCoroutine(ObstacleUP());       // 손 올라오는 코루틴 시작
         }
     }
 

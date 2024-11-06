@@ -118,10 +118,13 @@ public class GameManager : Singleton<GameManager>
 
     private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
-        Debug.Log("씬 전환 성공?");
-        player = FindAnyObjectByType<Player>();
-        player.onPlayerDie += GameOver;
-        StartCoroutine(TimeCoroutine());
+        Debug.Log("씬 전환 성공");
+        if(arg0.buildIndex == 2)
+        {
+            player = FindAnyObjectByType<Player>();
+            player.onPlayerDie += GameOver;
+            StartCoroutine(TimeCoroutine());
+        }
     }
 
     /// <summary>
@@ -163,7 +166,18 @@ public class GameManager : Singleton<GameManager>
         Debug.Log($"달린 시간 : {timeElapsed}");
         score = (Mathf.FloorToInt(timeElapsed) * 10) + (int)Money + (int)Jelly;
 
-        onGameOver?.Invoke(score);
+        StartCoroutine(DelayCoroutine());
+        //onGameOver?.Invoke(score);
+    }
+
+    /// <summary>
+    /// 패널 활성화에 딜레이를 주는 코루틴
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator DelayCoroutine()
+    {
+        yield return new WaitForSeconds(2.0f);      // 2초 기다리고
+        onGameOver?.Invoke(score);                  // 델리게이트 전송
     }
 
     /// <summary>

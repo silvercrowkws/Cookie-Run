@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/09_Test_Jelly.unity
-    guid: 47c042b7bedcc634599b8b2fc706153e
+    path: Assets/Scenes/11_Test_StartScene.unity
+    guid: 9039a110c505cc34b84c0cea4d11cac3
+  - enabled: 1
+    path: Assets/Scenes/12_Test_LoadingScene.unity
+    guid: 449b067c74cdc9d47892a72f58d08fc3
+  - enabled: 1
+    path: Assets/Scenes/10_Test_PlayScene.unity
+    guid: dc36812ecf7a75c4387ab582dc3e6537
   m_configObjects: {}
