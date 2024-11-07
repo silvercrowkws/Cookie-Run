@@ -15,6 +15,11 @@ public class GameOverPanel : MonoBehaviour
     Button restartButton;
 
     /// <summary>
+    /// 나가기 버튼
+    /// </summary>
+    Button ouitButton;
+
+    /// <summary>
     /// 게임 매니저
     /// </summary>
     GameManager gameManager;
@@ -37,9 +42,13 @@ public class GameOverPanel : MonoBehaviour
         // 처음 알파값을 0으로 설정
         canvasGroup.alpha = 0;
 
-        Transform child = transform.GetChild(0);                // 0번 RestertButton
-        restartButton = child.GetComponent<Button>();
+        Transform child = transform.GetChild(0);                        // 0번 Buttons
+
+        restartButton = child.GetChild(0).GetComponent<Button>();       // Buttons의 0번째 자식
         restartButton.onClick.AddListener(OnReStart);
+
+        ouitButton = child.GetChild(1).GetComponent<Button>();          // Buttons의 1번째 자식
+        ouitButton.onClick.AddListener(OnOuit);
 
         child = transform.GetChild(1);                          // 1번 Score
         child = child.GetChild(1);                              // Score의 1번 텍스트
@@ -104,5 +113,17 @@ public class GameOverPanel : MonoBehaviour
         canvasGroup.alpha = 0;          // 캔버스 그룹으로 패널과 자식의 알파값 초기화
 
         SceneManager.LoadScene(1);
+    }
+
+    /// <summary>
+    /// 나가기 버튼으로 게임을 종료하는 함수
+    /// </summary>
+    private void OnOuit()
+    {
+        Debug.Log("나가기 버튼 클릭");
+        Application.Quit();
+    #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;        // 에디터 모드에서 실행 중일 때 종료
+    #endif
     }
 }
