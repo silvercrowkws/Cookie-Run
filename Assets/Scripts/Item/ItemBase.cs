@@ -55,11 +55,18 @@ public class ItemBase : MonoBehaviour
     /// </summary>
     float frequency = 2.0f;
 
+    /// <summary>
+    /// 오디오 소스
+    /// </summary>
+    AudioSource audioSource;
+
     protected virtual void Awake()
     {
         circleCollider2D = GetComponent<CircleCollider2D>();
 
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        audioSource = GetComponent<AudioSource>();
 
         zeroAlphaColor = spriteRenderer.color;
         zeroAlphaColor.a = 0;
@@ -109,6 +116,10 @@ public class ItemBase : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             Debug.Log("아이템과 충돌");
+
+            // 소리 재생
+            audioSource.Play();
+
             circleCollider2D.enabled = false;           // 콜라이더를 비활성화
             spriteRenderer.color = zeroAlphaColor;      // 안보이게 알파값 0으로 변경
         }

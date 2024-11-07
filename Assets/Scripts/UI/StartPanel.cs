@@ -12,9 +12,15 @@ public class StartPanel : MonoBehaviour
     /// </summary>
     Button startButton;
 
+    /// <summary>
+    /// 오디오 소스
+    /// </summary>
+    AudioSource audioSource;
+
     private void Awake()
     {
         startButton = GetComponentInChildren<Button>();
+        audioSource = GetComponentInChildren<AudioSource>();
         startButton.onClick.AddListener(GameStart);
     }
 
@@ -23,7 +29,8 @@ public class StartPanel : MonoBehaviour
     /// </summary>
     private void GameStart()
     {
-        // 로딩 좀 추가하고 씬 넘어가는게 좋을 듯
+        audioSource.Play();
+
         SceneManager.LoadScene(1);
     }
 }
