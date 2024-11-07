@@ -408,7 +408,11 @@ public class Player : MonoBehaviour
         // 플레이어 데드 존과 충돌
         else if (collision.gameObject.CompareTag("PlayerDeadZone"))
         {
-            PlayerDieFC();
+            // 플레어어의 체력이 0이 되었을 때 공중에서 죽어서 플레이어 데드 존 과 충돌할 경우 방지
+            if(HP > 0)
+            {
+                PlayerDieFC();
+            }
         }
 
         // 장애물과 충돌
